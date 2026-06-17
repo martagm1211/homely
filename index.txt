@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#4A7C59">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Homely">
+<title>Homely</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #4A7C59;
+    --green-light: #E8F0EB;
+    --green-mid: #6B9E7A;
+    --cream: #FAF8F5;
+    --text: #1C2B22;
+    --text-soft: #6B7C72;
+    --border: #DDE5DF;
+    --white: #FFFFFF;
+    --red: #C0392B;
+    --amber: #E67E22;
+    --blue: #2980B9;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 2px 12px rgba(74,124,89,0.10);
+    --shadow-lg: 0 8px 32px rgba(74,124,89,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+  /* ── AUTH ── */
+  #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 24px; background: linear-gradient(160deg, var(--green) 0%, var(--green-mid) 60%, var(--cream) 100%); }
+  .auth-logo { font-family: 'DM Serif Display', serif; font-size: 48px; color: var(--white); letter-spacing: -1px; margin-bottom: 4px; }
+  .auth-tagline { color: rgba(255,255,255,0.75); font-size: 15px; margin-bottom: 40px; }
+  .auth-card { background: var(--white); border-radius: var(--radius); padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: var(--shadow-lg); }
+  .auth-tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .auth-tab { flex: 1; padding: 10px; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-soft); cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; }
+  .auth-tab.active { color: var(--green); border-color: var(--green); }
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; }
+  .input-group input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; outline: none; transition: border .2s; background: var(--cream); }
+  .input-group input:focus { border-color: var(--green); background: var(--white); }
+  .btn { width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .2s; }
+  .btn-primary { background: var(--green); color: var(--white); }
+  .btn-primary:hover { background: #3d6b4b; }
+  .btn-secondary { background: var(--green-light); color: var(--green); margin-top: 10px; }
+  .auth-msg { font-size: 13px; color: var(--red); margin-top: 12px; text-align: center; min-height: 18px; }
+
+  /* ── HOUSE SELECTOR ── */
+  #house-screen { min-height: 100vh; padding: 0; display: flex; flex-direction: column; }
+  .house-header { background: var(--green); padding: 52px 20px 24px; color: var(--white); }
+  .house-header h1 { font-family: 'DM Serif Display', serif; font-size: 28px; }
+  .house-header p { font-size: 14px; opacity: .75; margin-top: 4px; }
+  .house-list { padding: 20px; flex: 1; }
+  .house-card { background: var(--white); border-radius: var(--radius); padding: 18px; margin-bottom: 14px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 16px; cursor: pointer; transition: transform .15s; border: 1.5px solid transparent; }
+  .house-card:hover { transform: translateY(-1px); border-color: var(--green); }
+  .house-icon { width: 48px; height: 48px; background: var(--green-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .house-card-info h3 { font-size: 16px; font-weight: 600; }
+  .house-card-info p { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
+  .house-badge { margin-left: auto; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; background: var(--green-light); color: var(--green); flex-shrink: 0; }
+  .house-badge.pending { background: #FEF3E0; color: var(--amber); }
+  .add-house-btn { background: none; border: 2px dashed var(--border); border-radius: var(--radius); padding: 18px; width: 100%; display: flex; align-items: center; gap: 12px; color: var(--text-soft); font-size: 15px; font-family: inherit; cursor: pointer; transition: all .2s; }
+  .add-house-btn:hover { border-color: var(--green); color: var(--green); }
+  .logout-btn { margin: 0 20px 24px; background: none; border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 12px; color: var(--text-soft); font-size: 14px; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* ── MAIN APP ── */
+  #app { display: none; flex-direction: column; min-height: 100vh; }
+  .app-header { background: var(--white); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; }
+  .app-header-back { background: var(--green-light); border: none; border-radius: 10px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0; }
+  .app-header-title { flex: 1; }
+  .app-header-title h2 { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); }
+  .app-header-title p { font-size: 12px; color: var(--text-soft); }
+  .app-content { flex: 1; overflow-y: auto; padding-bottom: 80px; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); box-shadow: 0 -4px 20px rgba(0,0,0,.06); }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 4px 8px; cursor: pointer; transition: all .2s; color: var(--text-soft); border: none; background: none; font-family: inherit; }
+  .nav-item.active { color: var(--green); }
+  .nav-icon { font-size: 22px; margin-bottom: 3px; }
+  .nav-label { font-size: 10px; font-weight: 600; }
+
+  /* ── TABS ── */
+  .tab-panel { display: none; padding: 16px; }
+  .tab-panel.active { display: block; }
+
+  /* ── SECTION HEADER ── */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; }
+  .icon-btn { background: var(--green); color: var(--white); border: none; border-radius: 10px; width: 36px; height: 36px; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .icon-btn.secondary { background: var(--green-light); color: var(--green); }
+
+  /* ── CALENDAR ── */
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; background: var(--white); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow); }
+  .cal-nav button { background: var(--green-light); border: none; border-radius: 8px; width: 32px; height: 32px; font-size: 18px; cursor: pointer; color: var(--green); display: flex; align-items: center; justify-content: center; }
+  .cal-month { font-weight: 600; font-size: 16px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 16px; }
+  .cal-dow { text-align: center; font-size: 11px; font-weight: 600; color: var(--text-soft); padding: 6px 0; }
+  .cal-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; cursor: pointer; position: relative; transition: all .15s; }
+  .cal-day:hover { background: var(--green-light); }
+  .cal-day.today { background: var(--green); color: var(--white); font-weight: 700; }
+  .cal-day.has-event::after { content: ''; position: absolute; bottom: 3px; width: 5px; height: 5px; background: var(--amber); border-radius: 50%; }
+  .cal-day.today.has-event::after { background: var(--white); }
+  .cal-day.other-month { color: var(--border); }
+  .events-list { display: flex; flex-direction: column; gap: 10px; }
+  .event-card { background: var(--white); border-radius: var(--radius-sm); padding: 14px; box-shadow: var(--shadow); display: flex; gap: 12px; align-items: flex-start; }
+  .event-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+  .event-info h4 { font-size: 14px; font-weight: 600; }
+  .event-info p { font-size: 12px; color: var(--text-soft); margin-top: 2px; }
+  .event-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 20px; margin-top: 5px; }
+  .ev-medico { background: #FDE8E8; color: var(--red); }
+  .ev-celebracion { background: #FEF3E0; color: var(--amber); }
+  .ev-escolar { background: #E8F4FD; color: var(--blue); }
+  .ev-extraescolar { background: #E8FDF0; color: var(--green); }
+  .ev-evento { background: #F3E8FD; color: #8E44AD; }
+  .ev-otros { background: var(--green-light); color: var(--text-soft); }
+
+  /* ── KIDS / SIZES ── */
+  .card { background: var(--white); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+  .kids-table { width: 100%; border-collapse: collapse; }
+  .kids-table th { font-size: 20px; padding: 8px 6px; text-align: center; color: var(--text-soft); }
+  .kids-table th:first-child { text-align: left; font-size: 13px; font-weight: 600; }
+  .kids-table td { padding: 8px 6px; border-top: 1px solid var(--border); text-align: center; font-size: 14px; }
+  .kids-table td:first-child { text-align: left; font-weight: 600; font-size: 14px; }
+  .kids-table input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 14px; font-family: inherit; outline: none; background: var(--cream); }
+  .kids-table input:focus { border-color: var(--green); background: var(--white); }
+  .meds-table { width: 100%; border-collapse: collapse; }
+  .meds-table th { font-size: 12px; font-weight: 700; color: var(--text-soft); padding: 8px 6px; text-align: center; }
+  .meds-table th:first-child { text-align: left; }
+  .meds-table td { padding: 8px 6px; border-top: 1px solid var(--border); text-align: center; font-size: 14px; }
+  .meds-table td:first-child { text-align: left; font-weight: 600; }
+  .meds-table input { width: 100%; border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 4px; text-align: center; font-size: 13px; font-family: inherit; outline: none; background: var(--cream); }
+  .meds-table input:focus { border-color: var(--green); background: var(--white); }
+  .add-med-row { display: flex; gap: 8px; margin-top: 12px; }
+  .add-med-row input { flex: 1; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; outline: none; background: var(--cream); }
+  .add-med-row input:focus { border-color: var(--green); }
+  .add-med-row button { background: var(--green); color: var(--white); border: none; border-radius: var(--radius-sm); padding: 10px 16px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+
+  /* ── MENU ── */
+  .sub-tabs { display: flex; background: var(--white); border-radius: 12px; padding: 4px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .sub-tab { flex: 1; padding: 9px; text-align: center; font-size: 14px; font-weight: 600; color: var(--text-soft); cursor: pointer; border-radius: 9px; transition: all .2s; }
+  .sub-tab.active { background: var(--green); color: var(--white); }
+  .week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .week-nav button { background: var(--green-light); border: none; border-radius: 8px; width: 32px; height: 32px; font-size: 18px; cursor: pointer; color: var(--green); display: flex; align-items: center; justify-content: center; }
+  .week-nav span { font-weight: 600; font-size: 14px; }
+  .day-menu-card { background: var(--white); border-radius: var(--radius-sm); margin-bottom: 10px; overflow: hidden; box-shadow: var(--shadow); }
+  .day-menu-header { background: var(--green-light); padding: 10px 14px; font-weight: 700; font-size: 14px; color: var(--green); }
+  .meal-row { padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-top: 1px solid var(--border); }
+  .meal-row:first-of-type { border-top: none; }
+  .meal-label { font-size: 12px; font-weight: 700; color: var(--text-soft); width: 50px; flex-shrink: 0; }
+  .meal-row input { flex: 1; border: none; background: none; font-size: 14px; font-family: inherit; outline: none; color: var(--text); }
+  .recipe-card { background: var(--white); border-radius: var(--radius); margin-bottom: 12px; box-shadow: var(--shadow); overflow: hidden; cursor: pointer; }
+  .recipe-img { width: 100%; height: 140px; object-fit: cover; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 48px; }
+  .recipe-body { padding: 14px; }
+  .recipe-body h4 { font-size: 16px; font-weight: 600; }
+  .recipe-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .recipe-tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--green-light); color: var(--green); }
+
+  /* ── TASKS ── */
+  .task-item { background: var(--white); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; box-shadow: var(--shadow); display: flex; gap: 12px; align-items: flex-start; }
+  .task-check { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid var(--border); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; margin-top: 1px; }
+  .task-check.done { background: var(--green); border-color: var(--green); color: var(--white); }
+  .task-info { flex: 1; }
+  .task-info h4 { font-size: 15px; font-weight: 600; }
+  .task-info h4.done-text { text-decoration: line-through; color: var(--text-soft); }
+  .task-meta { font-size: 12px; color: var(--text-soft); margin-top: 4px; }
+  .task-done-by { font-size: 11px; color: var(--green); margin-top: 4px; font-weight: 500; }
+
+  /* ── CONFIG ── */
+  .config-section { background: var(--white); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .config-section h3 { font-size: 13px; font-weight: 700; color: var(--text-soft); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+  .member-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+  .member-row:first-of-type { border-top: none; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--green); color: var(--white); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .avatar.kid { background: var(--amber); }
+  .member-info { flex: 1; }
+  .member-info h4 { font-size: 14px; font-weight: 600; }
+  .member-info p { font-size: 12px; color: var(--text-soft); }
+  .member-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--green-light); color: var(--green); }
+  .member-badge.pending { background: #FEF3E0; color: var(--amber); }
+  .lang-selector { display: flex; gap: 8px; }
+  .lang-btn { flex: 1; padding: 10px; border: 2px solid var(--border); border-radius: var(--radius-sm); background: none; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all .2s; }
+  .lang-btn.active { border-color: var(--green); color: var(--green); background: var(--green-light); }
+  .danger-btn { width: 100%; padding: 12px; border: 1.5px solid var(--red); border-radius: var(--radius-sm); background: none; color: var(--red); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; }
+
+  /* ── MODAL ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 200; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--white); border-radius: var(--radius) var(--radius) 0 0; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal h3 { font-family: 'DM Serif Display', serif; font-size: 22px; margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-soft); margin-bottom: 6px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 15px; font-family: inherit; outline: none; transition: border .2s; background: var(--cream); }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--green); background: var(--white); }
+  .form-group textarea { min-height: 100px; resize: vertical; }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .checkbox-chip { padding: 7px 14px; border: 1.5px solid var(--border); border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
+  .checkbox-chip.selected { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions .btn { flex: 1; }
+  .btn-danger { background: #FDE8E8; color: var(--red); }
+
+  /* ── LOADING / EMPTY ── */
+  .loading { text-align: center; padding: 60px 20px; color: var(--text-soft); }
+  .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-soft); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 15px; }
+
+  /* ── TOAST ── */
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--white); padding: 12px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; opacity: 0; transition: all .3s; z-index: 300; white-space: nowrap; pointer-events: none; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── PHOTO UPLOAD ── */
+  .photo-upload { border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 20px; text-align: center; cursor: pointer; transition: all .2s; }
+  .photo-upload:hover { border-color: var(--green); }
+  .photo-preview { width: 100%; height: 160px; object-fit: cover; border-radius: var(--radius-sm); }
+
+  /* ── PENDING REQUESTS ── */
+  .request-card { background: #FEF3E0; border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; }
+  .request-actions { display: flex; gap: 8px; margin-left: auto; }
+  .btn-accept { background: var(--green); color: var(--white); border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+  .btn-reject { background: #FDE8E8; color: var(--red); border: none; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ AUTH -->
+<div id="auth-screen">
+  <div class="auth-logo">🏡 Homely</div>
+  <div class="auth-tagline" id="auth-tagline">Tu casa, organizada</div>
+  <div class="auth-card">
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Entrar</div>
+      <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Registrarse</div>
+    </div>
+    <div id="login-form">
+      <div class="input-group"><label id="lbl-email">Correo electrónico</label><input type="email" id="login-email" placeholder="tu@email.com"></div>
+      <div class="input-group"><label id="lbl-pass">Contraseña</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <button class="btn btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
+    </div>
+    <div id="register-form" style="display:none">
+      <div class="input-group"><label id="lbl-name">Tu nombre</label><input type="text" id="reg-name" placeholder="Marta"></div>
+      <div class="input-group"><label id="lbl-reg-email">Correo electrónico</label><input type="email" id="reg-email" placeholder="tu@email.com"></div>
+      <div class="input-group"><label id="lbl-reg-pass">Contraseña</label><input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres"></div>
+      <button class="btn btn-primary" id="btn-register" onclick="doRegister()">Crear cuenta</button>
+    </div>
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ HOUSE SELECTOR -->
+<div id="house-screen" style="display:none">
+  <div class="house-header">
+    <h1 id="hs-title">Mis Casas 🏡</h1>
+    <p id="hs-subtitle">Selecciona o crea una casa</p>
+  </div>
+  <div class="house-list" id="house-list">
+    <div class="loading"><div class="loading-spinner"></div><p>Cargando...</p></div>
+  </div>
+  <button class="logout-btn" onclick="doLogout()"><span>⬅</span> <span id="btn-logout-lbl">Cerrar sesión</span></button>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MAIN APP -->
+<div id="app">
+  <div class="app-header">
+    <button class="app-header-back" onclick="goToHouses()">🏡</button>
+    <div class="app-header-title">
+      <h2 id="current-house-name">Mi Casa</h2>
+      <p id="current-user-label">Cargando...</p>
+    </div>
+  </div>
+
+  <div class="app-content">
+    <!-- CALENDARIO -->
+    <div class="tab-panel active" id="panel-calendar">
+      <div class="section-header">
+        <div class="section-title" id="cal-title">Calendario</div>
+        <button class="icon-btn" onclick="openModal('modal-event')">＋</button>
+      </div>
+      <div class="cal-nav">
+        <button onclick="changeMonth(-1)">‹</button>
+        <span class="cal-month" id="cal-month-label"></span>
+        <button onclick="changeMonth(1)">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div id="events-for-day" class="events-list"></div>
+    </div>
+
+    <!-- NIÑOS -->
+    <div class="tab-panel" id="panel-kids">
+      <div class="section-title" id="kids-title" style="margin-bottom:16px">Niños</div>
+
+      <div class="card">
+        <div class="card-title" id="sizes-title">TALLAS</div>
+        <div style="overflow-x:auto">
+          <table class="kids-table" id="sizes-table">
+            <thead><tr>
+              <th id="th-name">Nombre</th>
+              <th title="Pantalón">👖</th>
+              <th title="Camiseta">👕</th>
+              <th title="Jersey">🧥</th>
+              <th title="Zapatos">👟</th>
+            </tr></thead>
+            <tbody id="sizes-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title" id="meds-title">MEDICACIÓN</div>
+        <div style="overflow-x:auto">
+          <table class="meds-table" id="meds-table">
+            <thead><tr id="meds-head">
+              <th id="th-name2">Nombre</th>
+              <th>Apiretal</th>
+              <th>Dalsy</th>
+            </tr></thead>
+            <tbody id="meds-body"></tbody>
+          </table>
+        </div>
+        <div class="add-med-row" id="add-med-visible">
+          <input type="text" id="new-med-name" placeholder="Nuevo medicamento...">
+          <button onclick="addMedColumn()">＋</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENÚS -->
+    <div class="tab-panel" id="panel-menu">
+      <div class="section-title" id="menu-title" style="margin-bottom:16px">Menús</div>
+      <div class="sub-tabs">
+        <div class="sub-tab active" id="st-weekly" onclick="switchMenuTab('weekly')" id="stw-label">Semana</div>
+        <div class="sub-tab" id="st-recipes" onclick="switchMenuTab('recipes')" id="str-label">Recetas</div>
+      </div>
+      <div id="menu-weekly">
+        <div class="week-nav">
+          <button onclick="changeWeek(-1)">‹</button>
+          <span id="week-label"></span>
+          <button onclick="changeWeek(1)">›</button>
+        </div>
+        <div id="week-days"></div>
+      </div>
+      <div id="menu-recipes" style="display:none">
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          <input type="text" id="recipe-search" placeholder="Buscar receta..." style="flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;outline:none;background:var(--cream)" oninput="renderRecipes()">
+          <button class="icon-btn" onclick="openModal('modal-recipe')">＋</button>
+        </div>
+        <div id="recipes-list"></div>
+      </div>
+    </div>
+
+    <!-- TAREAS -->
+    <div class="tab-panel" id="panel-tasks">
+      <div class="section-header">
+        <div class="section-title" id="tasks-title">Tareas</div>
+        <button class="icon-btn" onclick="openModal('modal-task')">＋</button>
+      </div>
+      <div id="tasks-pending"></div>
+      <div id="tasks-done-section" style="margin-top:20px">
+        <div style="font-size:13px;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px" id="done-label">COMPLETADAS</div>
+        <div id="tasks-done"></div>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div class="tab-panel" id="panel-config">
+      <div class="section-title" id="config-title" style="margin-bottom:16px">Configuración</div>
+
+      <div class="config-section">
+        <h3 id="cfg-lang">Idioma</h3>
+        <div class="lang-selector">
+          <button class="lang-btn active" id="lang-es" onclick="setLang('es')">🇪🇸 Español</button>
+          <button class="lang-btn" id="lang-en" onclick="setLang('en')">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <h3 id="cfg-kids">Niños</h3>
+        <div id="kids-list-config"></div>
+        <button class="btn btn-secondary" style="width:100%;margin-top:10px" onclick="openModal('modal-add-kid')" id="btn-add-kid">+ Añadir niño</button>
+      </div>
+
+      <div class="config-section">
+        <h3 id="cfg-members">Miembros</h3>
+        <div id="members-list-config"></div>
+        <div id="pending-requests"></div>
+        <button class="btn btn-secondary" style="width:100%;margin-top:10px" onclick="openModal('modal-invite')" id="btn-invite">+ Invitar usuario</button>
+      </div>
+
+      <div class="config-section">
+        <h3 id="cfg-house">Casa</h3>
+        <div class="form-group"><label id="cfg-house-name">Nombre de la casa</label>
+          <input type="text" id="house-name-input" placeholder="Mi Casa">
+        </div>
+        <button class="btn btn-primary" onclick="saveHouseName()" id="btn-save-house">Guardar</button>
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="danger-btn" onclick="doLogout()" id="btn-logout2">Cerrar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-calendar" onclick="switchTab('calendar')"><div class="nav-icon">📅</div><div class="nav-label" id="nl-cal">Calendario</div></button>
+    <button class="nav-item" id="nav-kids" onclick="switchTab('kids')"><div class="nav-icon">👶</div><div class="nav-label" id="nl-kids">Niños</div></button>
+    <button class="nav-item" id="nav-menu" onclick="switchTab('menu')"><div class="nav-icon">🍽️</div><div class="nav-label" id="nl-menu">Menús</div></button>
+    <button class="nav-item" id="nav-tasks" onclick="switchTab('tasks')"><div class="nav-icon">✅</div><div class="nav-label" id="nl-tasks">Tareas</div></button>
+    <button class="nav-item" id="nav-config" onclick="switchTab('config')"><div class="nav-icon">⚙️</div><div class="nav-label" id="nl-config">Config</div></button>
+  </nav>
+</div>
+
+<!-- ═══════════════════════════════════════════════ MODALS -->
+
+<!-- Event Modal -->
+<div class="modal-overlay" id="modal-event">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-event-title">Nuevo evento</h3>
+    <div class="form-group"><label id="lbl-ev-title">Título</label><input type="text" id="ev-title" placeholder="Visita médica..."></div>
+    <div class="form-group"><label id="lbl-ev-date">Fecha</label><input type="date" id="ev-date"></div>
+    <div class="form-group"><label id="lbl-ev-type">Tipo</label>
+      <select id="ev-type">
+        <option value="medico">Médico</option>
+        <option value="celebracion">Celebración</option>
+        <option value="escolar">Actividad Escolar</option>
+        <option value="extraescolar">Actividad Extraescolar</option>
+        <option value="evento">Evento</option>
+        <option value="otros">Otros</option>
+      </select>
+    </div>
+    <div class="form-group"><label id="lbl-ev-members">Afecta a</label>
+      <div class="checkbox-group" id="ev-members-chips"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-event')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveEvent()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recipe Modal -->
+<div class="modal-overlay" id="modal-recipe">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-recipe-title">Nueva receta</h3>
+    <div class="form-group"><label id="lbl-rec-title">Título</label><input type="text" id="rec-title" placeholder="Paella valenciana..."></div>
+    <div class="form-group"><label id="lbl-rec-tags">Etiquetas</label>
+      <div class="checkbox-group" id="rec-tags-chips">
+        <div class="checkbox-chip" data-tag="desayuno" onclick="toggleChip(this)">Desayuno</div>
+        <div class="checkbox-chip" data-tag="comida" onclick="toggleChip(this)">Comida</div>
+        <div class="checkbox-chip" data-tag="cena" onclick="toggleChip(this)">Cena</div>
+        <div class="checkbox-chip" data-tag="snack" onclick="toggleChip(this)">Snack</div>
+        <div class="checkbox-chip" data-tag="bebida" onclick="toggleChip(this)">Bebida</div>
+      </div>
+    </div>
+    <div class="form-group"><label id="lbl-rec-photo">Foto (opcional)</label>
+      <div class="photo-upload" onclick="document.getElementById('rec-photo-input').click()" id="photo-upload-area">
+        <div id="photo-placeholder">📷 Toca para añadir foto</div>
+        <img id="rec-photo-preview" class="photo-preview" style="display:none">
+      </div>
+      <input type="file" id="rec-photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+    </div>
+    <div class="form-group"><label id="lbl-rec-ingr">Ingredientes</label><textarea id="rec-ingredients" placeholder="200g de arroz&#10;1 cebolla..."></textarea></div>
+    <div class="form-group"><label id="lbl-rec-desc">Descripción</label><textarea id="rec-description" placeholder="Preparación paso a paso..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-recipe')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveRecipe()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="modal-task">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-task-title">Nueva tarea</h3>
+    <div class="form-group"><label id="lbl-task-title">Título</label><input type="text" id="task-title" placeholder="Comprar leche..."></div>
+    <div class="form-group"><label id="lbl-task-assign">Asignar a (opcional)</label>
+      <select id="task-assign"><option value="">Sin asignar</option></select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-task')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTask()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Kid Modal -->
+<div class="modal-overlay" id="modal-add-kid">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-kid-title">Añadir niño</h3>
+    <div class="form-group"><label id="lbl-kid-name">Nombre</label><input type="text" id="kid-name" placeholder="Nombre del niño..."></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-add-kid')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveKid()">Añadir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite Modal -->
+<div class="modal-overlay" id="modal-invite">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-invite-title">Invitar usuario</h3>
+    <p style="font-size:14px;color:var(--text-soft);margin-bottom:16px" id="invite-desc">El usuario deberá registrarse con este correo y solicitar unirse a la casa.</p>
+    <div class="form-group"><label id="lbl-invite-email">Correo electrónico</label><input type="email" id="invite-email" placeholder="amigo@email.com"></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-invite')">Cancelar</button>
+      <button class="btn btn-primary" onclick="sendInvite()">Enviar invitación</button>
+    </div>
+  </div>
+</div>
+
+<!-- House Create Modal -->
+<div class="modal-overlay" id="modal-create-house">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-house-title">Nueva Casa</h3>
+    <div class="form-group"><label id="lbl-house-name">Nombre</label><input type="text" id="new-house-name" placeholder="Mi Casa..."></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-create-house')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createHouse()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Join House Modal -->
+<div class="modal-overlay" id="modal-join-house">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="modal-join-title">Unirse a una Casa</h3>
+    <p style="font-size:14px;color:var(--text-soft);margin-bottom:16px" id="join-desc">Introduce el ID de la casa a la que quieres unirte. El administrador deberá aceptarte.</p>
+    <div class="form-group"><label id="lbl-join-id">ID de la Casa</label><input type="text" id="join-house-id" placeholder="ID de la casa..."></div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="closeModal('modal-join-house')">Cancelar</button>
+      <button class="btn btn-primary" onclick="requestJoin()">Solicitar acceso</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════ FIREBASE + APP LOGIC -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc, onSnapshot, query, where, arrayUnion, serverTimestamp, deleteDoc, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── CONFIG FIREBASE ──────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyB7ajKbB-MMljXwf83uQ5VRG3R-R55ubms",
+  authDomain: "homelyappmg.firebaseapp.com",
+  projectId: "homelyappmg",
+  storageBucket: "homelyappmg.firebasestorage.app",
+  messagingSenderId: "563855482078",
+  appId: "1:563855482078:web:b3f7f7788d7b125074764f"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
+// ── STATE ────────────────────────────────────────
+let currentUser = null;
+let currentHouseId = null;
+let currentHouseData = null;
+let lang = localStorage.getItem('homely-lang') || 'es';
+let calDate = new Date();
+let selectedCalDay = null;
+let currentWeekOffset = 0;
+let unsubListeners = [];
+let allMembers = [];
+let allKids = [];
+let allTasks = [];
+let allEvents = [];
+let allRecipes = [];
+let extraMeds = [];
+let editingEventId = null;
+
+// ── TRANSLATIONS ─────────────────────────────────
+const T = {
+  es: {
+    authTagline: 'Tu casa, organizada',
+    loginTab: 'Entrar', registerTab: 'Registrarse',
+    emailLbl: 'Correo electrónico', passLbl: 'Contraseña',
+    nameLbl: 'Tu nombre', regEmailLbl: 'Correo electrónico', regPassLbl: 'Contraseña (mín. 6 caracteres)',
+    btnLogin: 'Entrar', btnRegister: 'Crear cuenta',
+    hsTitle: 'Mis Casas 🏡', hsSub: 'Selecciona o crea una casa',
+    btnLogout: 'Cerrar sesión',
+    nlCal: 'Calendario', nlKids: 'Niños', nlMenu: 'Menús', nlTasks: 'Tareas', nlConfig: 'Config',
+    calTitle: 'Calendario', kidsTitle: 'Niños', menuTitle: 'Menús', tasksTitle: 'Tareas', configTitle: 'Configuración',
+    sizesTitle: 'TALLAS', medsTitle: 'MEDICACIÓN',
+    stWeekly: 'Semana', stRecipes: 'Recetas',
+    cfgLang: 'Idioma', cfgKids: 'Niños', cfgMembers: 'Miembros', cfgHouse: 'Casa',
+    btnAddKid: '+ Añadir niño', btnInvite: '+ Invitar usuario',
+    btnSaveHouse: 'Guardar', cfgHouseName: 'Nombre de la casa',
+    btnLogout2: 'Cerrar sesión',
+    doneLabel: 'COMPLETADAS',
+    adminBadge: 'Admin', pendingBadge: 'Pendiente', memberBadge: 'Miembro',
+    evTypes: { medico:'Médico', celebracion:'Celebración', escolar:'Actividad Escolar', extraescolar:'Actividad Extraescolar', evento:'Evento', otros:'Otros' },
+    dowNames: ['L','M','X','J','V','S','D'],
+    months: ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+    days: ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],
+    lunch: 'Comida', dinner: 'Cena',
+    noKids: 'No hay niños añadidos aún.\nVe a Configuración > Niños.',
+    noTasks: 'No hay tareas pendientes 🎉',
+    noDoneTasks: 'Ninguna tarea completada aún',
+    noRecipes: 'No hay recetas aún. ¡Añade la primera!',
+    noEvents: 'No hay eventos este día',
+    doneBy: 'Completada por',
+    assignedTo: 'Asignada a',
+    unassigned: 'Sin asignar',
+    inviteSent: '¡Invitación anotada! El usuario debe solicitar acceso con ese correo.',
+    savedOk: '¡Guardado!',
+    kidAdded: '¡Niño añadido!',
+    requestSent: 'Solicitud enviada. El administrador debe aceptarte.',
+    houseCreated: '¡Casa creada!',
+    accepted: 'Usuario aceptado',
+    rejected: 'Solicitud rechazada',
+    modalEventTitle: 'Nuevo evento', modalRecipeTitle: 'Nueva receta',
+    modalTaskTitle: 'Nueva tarea', modalKidTitle: 'Añadir niño',
+    modalInviteTitle: 'Invitar usuario', modalHouseTitle: 'Nueva Casa',
+    modalJoinTitle: 'Unirse a una Casa',
+    inviteDesc: 'El usuario deberá registrarse con este correo y solicitar unirse a la casa.',
+    joinDesc: 'Introduce el ID de la casa a la que quieres unirte.',
+    thName: 'Nombre',
+    pendingRequests: 'Solicitudes pendientes',
+    houseId: 'ID de la casa',
+    copyId: 'Copiar ID',
+    acceptBtn: 'Aceptar', rejectBtn: 'Rechazar',
+    weekOf: 'Semana del',
+  },
+  en: {
+    authTagline: 'Your home, organized',
+    loginTab: 'Sign in', registerTab: 'Sign up',
+    emailLbl: 'Email address', passLbl: 'Password',
+    nameLbl: 'Your name', regEmailLbl: 'Email address', regPassLbl: 'Password (min. 6 characters)',
+    btnLogin: 'Sign in', btnRegister: 'Create account',
+    hsTitle: 'My Homes 🏡', hsSub: 'Select or create a home',
+    btnLogout: 'Sign out',
+    nlCal: 'Calendar', nlKids: 'Kids', nlMenu: 'Menus', nlTasks: 'Tasks', nlConfig: 'Settings',
+    calTitle: 'Calendar', kidsTitle: 'Kids', menuTitle: 'Menus', tasksTitle: 'Tasks', configTitle: 'Settings',
+    sizesTitle: 'SIZES', medsTitle: 'MEDICATION',
+    stWeekly: 'Week', stRecipes: 'Recipes',
+    cfgLang: 'Language', cfgKids: 'Children', cfgMembers: 'Members', cfgHouse: 'Home',
+    btnAddKid: '+ Add child', btnInvite: '+ Invite user',
+    btnSaveHouse: 'Save', cfgHouseName: 'Home name',
+    btnLogout2: 'Sign out',
+    doneLabel: 'COMPLETED',
+    adminBadge: 'Admin', pendingBadge: 'Pending', memberBadge: 'Member',
+    evTypes: { medico:'Medical', celebracion:'Celebration', escolar:'School Activity', extraescolar:'Extracurricular', evento:'Event', otros:'Other' },
+    dowNames: ['M','T','W','T','F','S','S'],
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    days: ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+    lunch: 'Lunch', dinner: 'Dinner',
+    noKids: 'No children added yet.\nGo to Settings > Children.',
+    noTasks: 'No pending tasks 🎉',
+    noDoneTasks: 'No completed tasks yet',
+    noRecipes: 'No recipes yet. Add the first one!',
+    noEvents: 'No events this day',
+    doneBy: 'Completed by',
+    assignedTo: 'Assigned to',
+    unassigned: 'Unassigned',
+    inviteSent: 'Invitation noted! The user must request access with that email.',
+    savedOk: 'Saved!',
+    kidAdded: 'Child added!',
+    requestSent: 'Request sent. The admin must accept you.',
+    houseCreated: 'Home created!',
+    accepted: 'User accepted',
+    rejected: 'Request rejected',
+    modalEventTitle: 'New event', modalRecipeTitle: 'New recipe',
+    modalTaskTitle: 'New task', modalKidTitle: 'Add child',
+    modalInviteTitle: 'Invite user', modalHouseTitle: 'New Home',
+    modalJoinTitle: 'Join a Home',
+    inviteDesc: 'The user must register with this email and request to join.',
+    joinDesc: 'Enter the ID of the home you want to join.',
+    thName: 'Name',
+    pendingRequests: 'Pending requests',
+    houseId: 'Home ID',
+    copyId: 'Copy ID',
+    acceptBtn: 'Accept', rejectBtn: 'Reject',
+    weekOf: 'Week of',
+  }
+};
+
+function t(key) { return T[lang][key] || key; }
+
+// ── AUTH FUNCTIONS ──────────────────────────────
+window.switchAuthTab = (tab) => {
+  document.getElementById('login-form').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  document.getElementById('auth-msg').textContent = '';
+};
+
+window.doLogin = async () => {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    document.getElementById('auth-msg').textContent = lang === 'es' ? 'Correo o contraseña incorrectos' : 'Incorrect email or password';
+  }
+};
+
+window.doRegister = async () => {
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!name) { document.getElementById('auth-msg').textContent = lang === 'es' ? 'Escribe tu nombre' : 'Enter your name'; return; }
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await updateProfile(cred.user, { displayName: name });
+    await setDoc(doc(db, 'users', cred.user.uid), { name, email, uid: cred.user.uid, createdAt: serverTimestamp() });
+  } catch(e) {
+    document.getElementById('auth-msg').textContent = e.message;
+  }
+};
+
+window.doLogout = async () => {
+  unsubAll();
+  currentHouseId = null;
+  currentHouseData = null;
+  await signOut(auth);
+};
+
+// ── AUTH STATE ──────────────────────────────────
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    applyLang();
+    showScreen('house');
+    loadHouses();
+  } else {
+    currentUser = null;
+    applyLang();
+    showScreen('auth');
+  }
+});
+
+// ── SCREENS ─────────────────────────────────────
+function showScreen(name) {
+  document.getElementById('auth-screen').style.display = name === 'auth' ? 'flex' : 'none';
+  document.getElementById('house-screen').style.display = name === 'house' ? 'flex' : 'none';
+  document.getElementById('app').style.display = name === 'app' ? 'flex' : 'none';
+}
+
+// ── HOUSES ──────────────────────────────────────
+async function loadHouses() {
+  const list = document.getElementById('house-list');
+  list.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+
+  // My houses
+  const q = query(collection(db, 'houses'), where('memberIds', 'array-contains', currentUser.uid));
+  onSnapshot(q, (snap) => {
+    const houses = [];
+    snap.forEach(d => houses.push({ id: d.id, ...d.data() }));
+
+    // Pending requests
+    const q2 = query(collection(db, 'houses'), where('pendingIds', 'array-contains', currentUser.uid));
+    onSnapshot(q2, (snap2) => {
+      const pending = [];
+      snap2.forEach(d => pending.push({ id: d.id, ...d.data() }));
+      renderHouseList(houses, pending);
+    });
+  });
+}
+
+function renderHouseList(houses, pending) {
+  const list = document.getElementById('house-list');
+  let html = '';
+  houses.forEach(h => {
+    const isAdmin = h.adminId === currentUser.uid;
+    html += `<div class="house-card" onclick="enterHouse('${h.id}')">
+      <div class="house-icon">🏠</div>
+      <div class="house-card-info"><h3>${h.name}</h3><p>${h.memberIds?.length || 1} ${lang==='es'?'miembro(s)':'member(s)'}</p></div>
+      ${isAdmin ? `<div class="house-badge">${t('adminBadge')}</div>` : ''}
+    </div>`;
+  });
+  pending.forEach(h => {
+    html += `<div class="house-card" style="opacity:.6;cursor:default">
+      <div class="house-icon">⏳</div>
+      <div class="house-card-info"><h3>${h.name}</h3><p>${lang==='es'?'Esperando aprobación':'Awaiting approval'}</p></div>
+      <div class="house-badge pending">${t('pendingBadge')}</div>
+    </div>`;
+  });
+  html += `<button class="add-house-btn" onclick="openModal('modal-create-house')">🏡 <span>${lang==='es'?'Crear nueva casa':'Create new home'}</span></button>`;
+  html += `<button class="add-house-btn" style="margin-top:8px" onclick="openModal('modal-join-house')">🔑 <span>${lang==='es'?'Unirse a una casa':'Join a home'}</span></button>`;
+  list.innerHTML = html;
+}
+
+window.enterHouse = async (houseId) => {
+  currentHouseId = houseId;
+  const snap = await getDoc(doc(db, 'houses', houseId));
+  currentHouseData = { id: houseId, ...snap.data() };
+  document.getElementById('current-house-name').textContent = currentHouseData.name;
+  document.getElementById('current-user-label').textContent = currentUser.displayName || currentUser.email;
+  showScreen('app');
+  switchTab('calendar');
+  subscribeToHouse();
+};
+
+window.goToHouses = () => {
+  unsubAll();
+  showScreen('house');
+  loadHouses();
+};
+
+window.createHouse = async () => {
+  const name = document.getElementById('new-house-name').value.trim();
+  if (!name) return;
+  const ref = await addDoc(collection(db, 'houses'), {
+    name, adminId: currentUser.uid,
+    memberIds: [currentUser.uid],
+    pendingIds: [],
+    kids: [], extraMeds: [],
+    createdAt: serverTimestamp()
+  });
+  await setDoc(doc(db, 'houses', ref.id, 'members', currentUser.uid), {
+    uid: currentUser.uid, name: currentUser.displayName || currentUser.email,
+    email: currentUser.email, role: 'admin'
+  });
+  closeModal('modal-create-house');
+  showToast(t('houseCreated'));
+  enterHouse(ref.id);
+};
+
+window.requestJoin = async () => {
+  const hid = document.getElementById('join-house-id').value.trim();
+  if (!hid) return;
+  const ref = doc(db, 'houses', hid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) { showToast(lang==='es'?'Casa no encontrada':'Home not found'); return; }
+  await updateDoc(ref, { pendingIds: arrayUnion(currentUser.uid) });
+  // Save requester info
+  await setDoc(doc(db, 'houses', hid, 'requests', currentUser.uid), {
+    uid: currentUser.uid, name: currentUser.displayName || currentUser.email,
+    email: currentUser.email, requestedAt: serverTimestamp()
+  });
+  closeModal('modal-join-house');
+  showToast(t('requestSent'));
+};
+
+// ── SUBSCRIBE TO HOUSE DATA ──────────────────────
+function subscribeToHouse() {
+  unsubAll();
+
+  // Members
+  const uMembers = onSnapshot(collection(db, 'houses', currentHouseId, 'members'), snap => {
+    allMembers = [];
+    snap.forEach(d => allMembers.push(d.data()));
+    renderMembersConfig();
+    renderTaskAssignSelect();
+  });
+
+  // House doc (kids, extraMeds)
+  const uHouse = onSnapshot(doc(db, 'houses', currentHouseId), snap => {
+    currentHouseData = { id: currentHouseId, ...snap.data() };
+    allKids = currentHouseData.kids || [];
+    extraMeds = currentHouseData.extraMeds || [];
+    document.getElementById('house-name-input').value = currentHouseData.name || '';
+    renderKidsTable();
+    renderMedsTable();
+    renderKidsConfig();
+    renderEvMembersChips();
+    renderPendingRequests();
+  });
+
+  // Events
+  const uEvents = onSnapshot(query(collection(db, 'houses', currentHouseId, 'events'), orderBy('date')), snap => {
+    allEvents = [];
+    snap.forEach(d => allEvents.push({ id: d.id, ...d.data() }));
+    renderCalendar();
+    renderEventsForDay(selectedCalDay);
+  });
+
+  // Tasks
+  const uTasks = onSnapshot(collection(db, 'houses', currentHouseId, 'tasks'), snap => {
+    allTasks = [];
+    snap.forEach(d => allTasks.push({ id: d.id, ...d.data() }));
+    renderTasks();
+  });
+
+  // Recipes
+  const uRecipes = onSnapshot(collection(db, 'houses', currentHouseId, 'recipes'), snap => {
+    allRecipes = [];
+    snap.forEach(d => allRecipes.push({ id: d.id, ...d.data() }));
+    renderRecipes();
+  });
+
+  // Weekly menus
+  renderWeekMenu();
+
+  unsubListeners = [uMembers, uHouse, uEvents, uTasks, uRecipes];
+
+  // Add self as member if not yet
+  setTimeout(async () => {
+    const memRef = doc(db, 'houses', currentHouseId, 'members', currentUser.uid);
+    const memSnap = await getDoc(memRef);
+    if (!memSnap.exists()) {
+      await setDoc(memRef, {
+        uid: currentUser.uid, name: currentUser.displayName || currentUser.email,
+        email: currentUser.email,
+        role: currentHouseData?.adminId === currentUser.uid ? 'admin' : 'member'
+      });
+    }
+  }, 500);
+}
+
+function unsubAll() { unsubListeners.forEach(u => u && u()); unsubListeners = []; }
+
+// ── TABS ─────────────────────────────────────────
+window.switchTab = (tab) => {
+  ['calendar','kids','menu','tasks','config'].forEach(t => {
+    document.getElementById('panel-'+t).classList.toggle('active', t === tab);
+    document.getElementById('nav-'+t).classList.toggle('active', t === tab);
+  });
+};
+
+// ── LANGUAGE ────────────────────────────────────
+window.setLang = (l) => {
+  lang = l;
+  localStorage.setItem('homely-lang', l);
+  applyLang();
+  renderCalendar();
+  renderEventsForDay(selectedCalDay);
+  renderTasks();
+  renderKidsTable();
+  renderMedsTable();
+  renderKidsConfig();
+  renderMembersConfig();
+  renderWeekMenu();
+  renderRecipes();
+};
+
+function applyLang() {
+  const set = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt; };
+  set('auth-tagline', t('authTagline'));
+  set('tab-login', t('loginTab')); set('tab-register', t('registerTab'));
+  set('lbl-email', t('emailLbl')); set('lbl-pass', t('passLbl'));
+  set('lbl-name', t('nameLbl')); set('lbl-reg-email', t('regEmailLbl')); set('lbl-reg-pass', t('regPassLbl'));
+  set('btn-login', t('btnLogin')); set('btn-register', t('btnRegister'));
+  set('hs-title', t('hsTitle')); set('hs-subtitle', t('hsSub'));
+  set('btn-logout-lbl', t('btnLogout'));
+  set('nl-cal', t('nlCal')); set('nl-kids', t('nlKids')); set('nl-menu', t('nlMenu')); set('nl-tasks', t('nlTasks')); set('nl-config', t('nlConfig'));
+  set('cal-title', t('calTitle')); set('kids-title', t('kidsTitle')); set('menu-title', t('menuTitle')); set('tasks-title', t('tasksTitle')); set('config-title', t('configTitle'));
+  set('sizes-title', t('sizesTitle')); set('meds-title', t('medsTitle'));
+  set('st-weekly', t('stWeekly')); set('st-recipes', t('stRecipes'));
+  set('cfg-lang', t('cfgLang')); set('cfg-kids', t('cfgKids')); set('cfg-members', t('cfgMembers')); set('cfg-house', t('cfgHouse'));
+  set('btn-add-kid', t('btnAddKid')); set('btn-invite', t('btnInvite'));
+  set('btn-save-house', t('btnSaveHouse')); set('cfg-house-name', t('cfgHouseName'));
+  set('btn-logout2', t('btnLogout2'));
+  set('done-label', t('doneLabel'));
+  set('modal-event-title', t('modalEventTitle')); set('modal-recipe-title', t('modalRecipeTitle'));
+  set('modal-task-title', t('modalTaskTitle')); set('modal-kid-title', t('modalKidTitle'));
+  set('modal-invite-title', t('modalInviteTitle')); set('modal-house-title', t('modalHouseTitle'));
+  set('modal-join-title', t('modalJoinTitle'));
+  set('invite-desc', t('inviteDesc')); set('join-desc', t('joinDesc'));
+  set('th-name', t('thName')); set('th-name2', t('thName'));
+  document.getElementById('lang-es').classList.toggle('active', lang === 'es');
+  document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+  // Event type options
+  const sel = document.getElementById('ev-type');
+  if (sel) {
+    const evTypes = t('evTypes');
+    sel.innerHTML = Object.entries(evTypes).map(([v,l]) => `<option value="${v}">${l}</option>`).join('');
+  }
+}
+
+// ── CALENDAR ────────────────────────────────────
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const year = calDate.getFullYear();
+  const month = calDate.getMonth();
+  document.getElementById('cal-month-label').textContent = `${t('months')[month]} ${year}`;
+
+  const dows = t('dowNames');
+  let html = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  const firstDay = new Date(year, month, 1);
+  let startDow = firstDay.getDay(); // 0=Sun
+  startDow = startDow === 0 ? 6 : startDow - 1; // Mon=0
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const prevDays = new Date(year, month, 0).getDate();
+
+  const today = new Date();
+  const eventDays = new Set(allEvents.filter(e => {
+    const d = new Date(e.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  }).map(e => new Date(e.date).getDate()));
+
+  // Prev month
+  for (let i = startDow-1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${prevDays-i}</div>`;
+  }
+  // Current month
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = today.getFullYear()===year && today.getMonth()===month && today.getDate()===d;
+    const hasEv = eventDays.has(d);
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    html += `<div class="cal-day${isToday?' today':''}${hasEv?' has-event':''}" onclick="selectDay('${dateStr}')">${d}</div>`;
+  }
+  // Next month
+  const total = startDow + daysInMonth;
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let d = 1; d <= remaining; d++) {
+    html += `<div class="cal-day other-month">${d}</div>`;
+  }
+  grid.innerHTML = html;
+}
+
+window.changeMonth = (dir) => {
+  calDate = new Date(calDate.getFullYear(), calDate.getMonth() + dir, 1);
+  renderCalendar();
+};
+
+window.selectDay = (dateStr) => {
+  selectedCalDay = dateStr;
+  // Set date in modal
+  document.getElementById('ev-date').value = dateStr;
+  renderEventsForDay(dateStr);
+};
+
+function renderEventsForDay(dateStr) {
+  const container = document.getElementById('events-for-day');
+  if (!dateStr) { container.innerHTML = ''; return; }
+  const dayEvents = allEvents.filter(e => e.date === dateStr);
+  if (!dayEvents.length) {
+    container.innerHTML = `<div class="empty-state"><p>${t('noEvents')}</p></div>`;
+    return;
+  }
+  const evTypes = t('evTypes');
+  const colors = { medico:'#C0392B', celebracion:'#E67E22', escolar:'#2980B9', extraescolar:'#4A7C59', evento:'#8E44AD', otros:'#888' };
+  container.innerHTML = dayEvents.map(ev => `
+    <div class="event-card">
+      <div class="event-dot" style="background:${colors[ev.type]||'#888'}"></div>
+      <div class="event-info">
+        <h4>${ev.title}</h4>
+        <p>${ev.members?.join(', ') || ''}</p>
+        <span class="event-tag ev-${ev.type}">${evTypes[ev.type]||ev.type}</span>
+      </div>
+      <button style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-soft)" onclick="deleteEvent('${ev.id}')">🗑️</button>
+    </div>`).join('');
+}
+
+// ── EVENTS ──────────────────────────────────────
+function renderEvMembersChips() {
+  const container = document.getElementById('ev-members-chips');
+  if (!container) return;
+  const all = [...allMembers.map(m=>m.name), ...allKids];
+  container.innerHTML = all.map(n => `<div class="checkbox-chip" onclick="toggleChip(this)" data-val="${n}">${n}</div>`).join('');
+}
+
+window.saveEvent = async () => {
+  const title = document.getElementById('ev-title').value.trim();
+  const date = document.getElementById('ev-date').value;
+  const type = document.getElementById('ev-type').value;
+  const members = [...document.querySelectorAll('#ev-members-chips .checkbox-chip.selected')].map(c=>c.dataset.val);
+  if (!title || !date) return;
+  await addDoc(collection(db, 'houses', currentHouseId, 'events'), {
+    title, date, type, members, createdAt: serverTimestamp(), createdBy: currentUser.uid
+  });
+  closeModal('modal-event');
+  document.getElementById('ev-title').value = '';
+  renderEventsForDay(date);
+};
+
+window.deleteEvent = async (id) => {
+  await deleteDoc(doc(db, 'houses', currentHouseId, 'events', id));
+};
+
+// ── KIDS TABLE ──────────────────────────────────
+function renderKidsTable() {
+  const tbody = document.getElementById('sizes-body');
+  if (!allKids.length) { tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`; return; }
+  const sizes = currentHouseData.sizes || {};
+  tbody.innerHTML = allKids.map(kid => {
+    const ks = sizes[kid] || {};
+    return `<tr>
+      <td>${kid}</td>
+      <td><input type="text" value="${ks.pantalon||''}" onblur="saveSize('${kid}','pantalon',this.value)" placeholder="—"></td>
+      <td><input type="text" value="${ks.camiseta||''}" onblur="saveSize('${kid}','camiseta',this.value)" placeholder="—"></td>
+      <td><input type="text" value="${ks.jersey||''}" onblur="saveSize('${kid}','jersey',this.value)" placeholder="—"></td>
+      <td><input type="text" value="${ks.zapatos||''}" onblur="saveSize('${kid}','zapatos',this.value)" placeholder="—"></td>
+    </tr>`;
+  }).join('');
+}
+
+window.saveSize = async (kid, field, value) => {
+  const path = `sizes.${kid}.${field}`;
+  await updateDoc(doc(db, 'houses', currentHouseId), { [path]: value });
+};
+
+// ── MEDS TABLE ──────────────────────────────────
+function renderMedsTable() {
+  const tbody = document.getElementById('meds-body');
+  const thead = document.getElementById('meds-head');
+  const allMedCols = ['apiretal', 'dalsy', ...extraMeds];
+  const meds = currentHouseData.meds || {};
+
+  thead.innerHTML = `<th>${t('thName')}</th>` + allMedCols.map(m => `<th>${m.charAt(0).toUpperCase()+m.slice(1)}</th>`).join('');
+
+  if (!allKids.length) { tbody.innerHTML = `<tr><td colspan="${allMedCols.length+1}" style="color:var(--text-soft);font-size:13px">${t('noKids')}</td></tr>`; return; }
+  tbody.innerHTML = allKids.map(kid => {
+    const km = meds[kid] || {};
+    return `<tr><td>${kid}</td>${allMedCols.map(m => `<td><input type="text" value="${km[m]||''}" onblur="saveMed('${kid}','${m}',this.value)" placeholder="—"></td>`).join('')}</tr>`;
+  }).join('');
+}
+
+window.saveMed = async (kid, med, value) => {
+  await updateDoc(doc(db, 'houses', currentHouseId), { [`meds.${kid}.${med}`]: value });
+};
+
+window.addMedColumn = async () => {
+  const input = document.getElementById('new-med-name');
+  const name = input.value.trim().toLowerCase();
+  if (!name || extraMeds.includes(name)) return;
+  const newMeds = [...extraMeds, name];
+  await updateDoc(doc(db, 'houses', currentHouseId), { extraMeds: newMeds });
+  input.value = '';
+};
+
+// ── MENU ────────────────────────────────────────
+window.switchMenuTab = (tab) => {
+  document.getElementById('menu-weekly').style.display = tab === 'weekly' ? 'block' : 'none';
+  document.getElementById('menu-recipes').style.display = tab === 'recipes' ? 'block' : 'none';
+  document.getElementById('st-weekly').classList.toggle('active', tab === 'weekly');
+  document.getElementById('st-recipes').classList.toggle('active', tab === 'recipes');
+};
+
+function getWeekStart(offset) {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - (day === 0 ? 6 : day - 1);
+  const monday = new Date(now.setDate(diff + offset * 7));
+  monday.setHours(0,0,0,0);
+  return monday;
+}
+
+function renderWeekMenu() {
+  const weekStart = getWeekStart(currentWeekOffset);
+  const weekEnd = new Date(weekStart); weekEnd.setDate(weekEnd.getDate() + 6);
+  const fmt = d => `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+  document.getElementById('week-label').textContent = `${t('weekOf')} ${fmt(weekStart)} – ${fmt(weekEnd)}`;
+
+  const weekKey = `${weekStart.getFullYear()}-W${String(Math.ceil(weekStart.getDate()/7)).padStart(2,'0')}-${currentWeekOffset}`;
+  const dayNames = t('days');
+  const lunch = t('lunch'); const dinner = t('dinner');
+  let html = '';
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart); d.setDate(d.getDate() + i);
+    const dateStr = d.toISOString().split('T')[0];
+    const dayKey = `${weekKey}-${dateStr}`;
+    const saved = currentHouseData?.menus?.[dateStr] || {};
+    html += `<div class="day-menu-card">
+      <div class="day-menu-header">${dayNames[i]} ${fmt(d)}</div>
+      <div class="meal-row"><span class="meal-label">${lunch}</span><input type="text" value="${saved.lunch||''}" placeholder="..." onblur="saveMenu('${dateStr}','lunch',this.value)"></div>
+      <div class="meal-row"><span class="meal-label">${dinner}</span><input type="text" value="${saved.dinner||''}" placeholder="..." onblur="saveMenu('${dateStr}','dinner',this.value)"></div>
+    </div>`;
+  }
+  document.getElementById('week-days').innerHTML = html;
+}
+
+window.changeWeek = async (dir) => {
+  // Save current week data first via blur events
+  currentWeekOffset += dir;
+  // Reload from DB
+  const snap = await getDoc(doc(db, 'houses', currentHouseId));
+  currentHouseData = { id: currentHouseId, ...snap.data() };
+  renderWeekMenu();
+};
+
+window.saveMenu = async (dateStr, meal, value) => {
+  await updateDoc(doc(db, 'houses', currentHouseId), { [`menus.${dateStr}.${meal}`]: value });
+};
+
+// ── RECIPES ─────────────────────────────────────
+window.renderRecipes = () => {
+  const search = document.getElementById('recipe-search')?.value?.toLowerCase() || '';
+  const filtered = allRecipes.filter(r => r.title?.toLowerCase().includes(search));
+  const container = document.getElementById('recipes-list');
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🍳</div><p>${t('noRecipes')}</p></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(r => `
+    <div class="recipe-card">
+      <div class="recipe-img">${r.photo ? `<img src="${r.photo}" style="width:100%;height:140px;object-fit:cover">` : '🍽️'}</div>
+      <div class="recipe-body">
+        <h4>${r.title}</h4>
+        <div class="recipe-tags">${(r.tags||[]).map(tag=>`<span class="recipe-tag">${tag}</span>`).join('')}</div>
+        ${r.ingredients ? `<p style="font-size:13px;color:var(--text-soft);margin-top:8px">${r.ingredients.substring(0,80)}${r.ingredients.length>80?'...':''}</p>` : ''}
+      </div>
+    </div>`).join('');
+};
+
+window.previewPhoto = (input) => {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('rec-photo-preview').src = e.target.result;
+    document.getElementById('rec-photo-preview').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.saveRecipe = async () => {
+  const title = document.getElementById('rec-title').value.trim();
+  if (!title) return;
+  const tags = [...document.querySelectorAll('#rec-tags-chips .checkbox-chip.selected')].map(c=>c.dataset.tag);
+  const ingredients = document.getElementById('rec-ingredients').value.trim();
+  const description = document.getElementById('rec-description').value.trim();
+  const photoEl = document.getElementById('rec-photo-preview');
+  const photo = photoEl.style.display !== 'none' ? photoEl.src : '';
+  await addDoc(collection(db, 'houses', currentHouseId, 'recipes'), {
+    title, tags, ingredients, description, photo, createdAt: serverTimestamp(), createdBy: currentUser.uid
+  });
+  closeModal('modal-recipe');
+  document.getElementById('rec-title').value = '';
+  document.getElementById('rec-ingredients').value = '';
+  document.getElementById('rec-description').value = '';
+  document.getElementById('rec-photo-preview').style.display = 'none';
+  document.getElementById('photo-placeholder').style.display = 'block';
+  document.querySelectorAll('#rec-tags-chips .checkbox-chip').forEach(c=>c.classList.remove('selected'));
+};
+
+// ── TASKS ────────────────────────────────────────
+function renderTaskAssignSelect() {
+  const sel = document.getElementById('task-assign');
+  if (!sel) return;
+  sel.innerHTML = `<option value="">${t('unassigned')}</option>` +
+    allMembers.map(m => `<option value="${m.uid}">${m.name}</option>`).join('');
+}
+
+function renderTasks() {
+  const pending = allTasks.filter(t => !t.done);
+  const done = allTasks.filter(t => t.done);
+
+  const pContainer = document.getElementById('tasks-pending');
+  const dContainer = document.getElementById('tasks-done');
+
+  if (!pending.length) {
+    pContainer.innerHTML = `<div class="empty-state"><div class="empty-icon">🎉</div><p>${t('noTasks')}</p></div>`;
+  } else {
+    pContainer.innerHTML = pending.map(task => renderTaskCard(task)).join('');
+  }
+
+  if (!done.length) {
+    dContainer.innerHTML = `<div class="empty-state" style="padding:16px 0"><p style="font-size:13px">${t('noDoneTasks')}</p></div>`;
+  } else {
+    dContainer.innerHTML = done.map(task => renderTaskCard(task)).join('');
+  }
+}
+
+function renderTaskCard(task) {
+  const assignee = task.assignedTo ? allMembers.find(m=>m.uid===task.assignedTo)?.name || '' : '';
+  const doneBy = task.doneBy ? allMembers.find(m=>m.uid===task.doneBy)?.name || '' : '';
+  const doneAt = task.doneAt?.toDate ? task.doneAt.toDate().toLocaleString(lang==='es'?'es-ES':'en-GB', {dateStyle:'short',timeStyle:'short'}) : '';
+  return `<div class="task-item">
+    <div class="task-check${task.done?' done':''}" onclick="toggleTask('${task.id}',${!task.done})">${task.done?'✓':''}</div>
+    <div class="task-info">
+      <h4 class="${task.done?'done-text':''}">${task.title}</h4>
+      ${assignee ? `<p class="task-meta">${t('assignedTo')}: ${assignee}</p>` : ''}
+      ${task.done && doneBy ? `<p class="task-done-by">✓ ${t('doneBy')} ${doneBy} · ${doneAt}</p>` : ''}
+    </div>
+    <button style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--text-soft)" onclick="deleteTask('${task.id}')">🗑️</button>
+  </div>`;
+}
+
+window.saveTask = async () => {
+  const title = document.getElementById('task-title').value.trim();
+  if (!title) return;
+  const assignedTo = document.getElementById('task-assign').value;
+  await addDoc(collection(db, 'houses', currentHouseId, 'tasks'), {
+    title, assignedTo, done: false, createdAt: serverTimestamp(), createdBy: currentUser.uid
+  });
+  closeModal('modal-task');
+  document.getElementById('task-title').value = '';
+};
+
+window.toggleTask = async (id, done) => {
+  const data = { done };
+  if (done) { data.doneBy = currentUser.uid; data.doneAt = serverTimestamp(); }
+  else { data.doneBy = null; data.doneAt = null; }
+  await updateDoc(doc(db, 'houses', currentHouseId, 'tasks', id), data);
+};
+
+window.deleteTask = async (id) => {
+  await deleteDoc(doc(db, 'houses', currentHouseId, 'tasks', id));
+};
+
+// ── CONFIG ───────────────────────────────────────
+function renderKidsConfig() {
+  const container = document.getElementById('kids-list-config');
+  if (!allKids.length) { container.innerHTML = ''; return; }
+  container.innerHTML = allKids.map((kid, i) => `
+    <div class="member-row">
+      <div class="avatar kid">${kid.charAt(0).toUpperCase()}</div>
+      <div class="member-info"><h4>${kid}</h4></div>
+      <button style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--text-soft)" onclick="deleteKid(${i})">🗑️</button>
+    </div>`).join('');
+}
+
+window.saveKid = async () => {
+  const name = document.getElementById('kid-name').value.trim();
+  if (!name) return;
+  await updateDoc(doc(db, 'houses', currentHouseId), { kids: arrayUnion(name) });
+  closeModal('modal-add-kid');
+  document.getElementById('kid-name').value = '';
+  showToast(t('kidAdded'));
+};
+
+window.deleteKid = async (idx) => {
+  const newKids = [...allKids];
+  newKids.splice(idx, 1);
+  await updateDoc(doc(db, 'houses', currentHouseId), { kids: newKids });
+};
+
+function renderMembersConfig() {
+  const container = document.getElementById('members-list-config');
+  const isAdmin = currentHouseData?.adminId === currentUser.uid;
+  container.innerHTML = allMembers.map(m => `
+    <div class="member-row">
+      <div class="avatar">${(m.name||'?').charAt(0).toUpperCase()}</div>
+      <div class="member-info"><h4>${m.name}</h4><p>${m.email||''}</p></div>
+      <div class="member-badge">${m.role==='admin'?t('adminBadge'):t('memberBadge')}</div>
+    </div>`).join('');
+
+  // House ID for sharing
+  if (isAdmin) {
+    const existing = document.getElementById('house-id-row');
+    if (!existing) {
+      const row = document.createElement('div');
+      row.id = 'house-id-row';
+      row.style.cssText = 'margin-top:12px;padding:10px;background:var(--green-light);border-radius:10px;font-size:13px;display:flex;align-items:center;gap:8px';
+      row.innerHTML = `<span style="flex:1"><strong>${t('houseId')}:</strong> ${currentHouseId}</span>
+        <button style="background:var(--green);color:white;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer" onclick="copyHouseId()">${t('copyId')}</button>`;
+      container.appendChild(row);
+    }
+  }
+}
+
+function renderPendingRequests() {
+  const container = document.getElementById('pending-requests');
+  const isAdmin = currentHouseData?.adminId === currentUser.uid;
+  if (!isAdmin) { container.innerHTML = ''; return; }
+
+  const pendingIds = currentHouseData.pendingIds || [];
+  if (!pendingIds.length) { container.innerHTML = ''; return; }
+
+  // Fetch request details
+  Promise.all(pendingIds.map(uid => getDoc(doc(db, 'houses', currentHouseId, 'requests', uid))))
+    .then(snaps => {
+      const requests = snaps.filter(s=>s.exists()).map(s=>s.data());
+      if (!requests.length) { container.innerHTML = ''; return; }
+      container.innerHTML = `<div style="font-size:13px;font-weight:700;color:var(--amber);margin:12px 0 8px">${t('pendingRequests')}</div>` +
+        requests.map(r => `<div class="request-card">
+          <div class="avatar" style="background:var(--amber)">${(r.name||'?').charAt(0).toUpperCase()}</div>
+          <div style="flex:1"><strong style="font-size:14px">${r.name}</strong><br><span style="font-size:12px;color:var(--text-soft)">${r.email}</span></div>
+          <div class="request-actions">
+            <button class="btn-accept" onclick="acceptRequest('${r.uid}','${r.name}','${r.email}')">${t('acceptBtn')}</button>
+            <button class="btn-reject" onclick="rejectRequest('${r.uid}')">${t('rejectBtn')}</button>
+          </div>
+        </div>`).join('');
+    });
+}
+
+window.acceptRequest = async (uid, name, email) => {
+  const houseRef = doc(db, 'houses', currentHouseId);
+  // Add to members
+  await setDoc(doc(db, 'houses', currentHouseId, 'members', uid), { uid, name, email, role: 'member' });
+  // Add to memberIds, remove from pending
+  const h = currentHouseData;
+  const newPending = (h.pendingIds||[]).filter(id=>id!==uid);
+  const newMembers = [...(h.memberIds||[]), uid];
+  await updateDoc(houseRef, { memberIds: newMembers, pendingIds: newPending });
+  await deleteDoc(doc(db, 'houses', currentHouseId, 'requests', uid));
+  showToast(t('accepted'));
+};
+
+window.rejectRequest = async (uid) => {
+  const h = currentHouseData;
+  const newPending = (h.pendingIds||[]).filter(id=>id!==uid);
+  await updateDoc(doc(db, 'houses', currentHouseId), { pendingIds: newPending });
+  await deleteDoc(doc(db, 'houses', currentHouseId, 'requests', uid));
+  showToast(t('rejected'));
+};
+
+window.copyHouseId = () => {
+  navigator.clipboard.writeText(currentHouseId).then(() => showToast(lang==='es'?'ID copiado':'ID copied'));
+};
+
+window.sendInvite = () => {
+  closeModal('modal-invite');
+  showToast(t('inviteSent'));
+};
+
+window.saveHouseName = async () => {
+  const name = document.getElementById('house-name-input').value.trim();
+  if (!name) return;
+  await updateDoc(doc(db, 'houses', currentHouseId), { name });
+  document.getElementById('current-house-name').textContent = name;
+  showToast(t('savedOk'));
+};
+
+// ── MODALS ───────────────────────────────────────
+window.openModal = (id) => {
+  if (id === 'modal-event') {
+    renderEvMembersChips();
+    const today = new Date().toISOString().split('T')[0];
+    if (!document.getElementById('ev-date').value) document.getElementById('ev-date').value = today;
+  }
+  if (id === 'modal-task') renderTaskAssignSelect();
+  document.getElementById(id).classList.add('open');
+};
+window.closeModal = (id) => { document.getElementById(id).classList.remove('open'); };
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+});
+
+// ── CHIPS ────────────────────────────────────────
+window.toggleChip = (el) => { el.classList.toggle('selected'); };
+
+// ── TOAST ────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+window.showToast = showToast;
+
+// ── INIT ─────────────────────────────────────────
+applyLang();
+</script>
+</body>
+</html>
