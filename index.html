@@ -267,7 +267,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 <symbol id="ico-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
 <symbol id="ico-pants" viewBox="0 0 24 24"><path d="M4 3h16v5l-3 13H13l-1-8-1 8H7L4 8V3z"/></symbol>
 <symbol id="ico-tshirt" viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 001 .83H6v10a1 1 0 001 1h10a1 1 0 001-1V10h2.15a1 1 0 001-.83l.57-3.57a2 2 0 00-1.34-2.14z"/></symbol>
-<symbol id="ico-shoe" viewBox="0 0 24 24"><path d="M2 17c0 0 1-5 5-5h3l2-3h3c1.5 0 2.5 1 3 2l2 1v3a1 1 0 01-1 1H3a1 1 0 01-1-1v-2z"/><path d="M7 12l1-2M10 12l1-2M5 17v-2"/></symbol>
+<symbol id="ico-shoe" viewBox="0 0 48 32"><path d="M4 26h40a2 2 0 000-4h-4l-3-4c-2-2.5-4-4-8-4h-6l-3-3H14c-2 0-3 1-4 3l-1 2H6a2 2 0 00-2 2v3z" stroke-width="1.8"/><path d="M14 15l2-4" stroke-width="1.6"/><path d="M25 13c0 0 2 2 2 5" stroke-width="1.4"/><path d="M28 14l2 1M31 15.5l2 1" stroke-width="1.3"/><path d="M10 22c0-2 2-4 4-4" stroke-width="1.4"/><rect x="2" y="26" width="44" height="3" rx="1.5" stroke-width="1.6"/></symbol>
 <symbol id="ico-recipe" viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 3-2 5-4 6v7H9v-7C7 14 5 12 5 9a7 7 0 017-7z"/><path d="M9 21h6"/></symbol>
 <symbol id="ico-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
 <symbol id="ico-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
@@ -500,8 +500,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           <svg width="28" height="28" style="stroke:var(--border);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-bottom:6px"><use href="#ico-photo"/></svg>
           <div id="photo-placeholder">Toca para añadir foto</div>
         </div>
-        <div id="photo-preview-wrap" style="display:none;position:relative">
-          <img id="rec-photo-preview" class="photo-preview">
+        <div id="photo-preview-wrap" style="display:none">
+          <div style="width:100%;height:140px;overflow:hidden;border-radius:var(--radius-sm);position:relative;background:#000;cursor:grab" id="photo-crop-area">
+            <img id="rec-photo-preview" style="position:absolute;max-width:none;cursor:grab;user-select:none" draggable="false">
+          </div>
+          <div style="margin-top:8px">
+            <div style="font-size:11px;font-weight:600;color:var(--text-soft);margin-bottom:4px">Zoom</div>
+            <input type="range" id="photo-zoom" min="100" max="300" value="100" style="width:100%;accent-color:var(--primary)" oninput="updatePhotoTransform()">
+          </div>
           <div style="display:flex;gap:8px;margin-top:8px">
             <button onclick="document.getElementById('rec-photo-input').click()" style="flex:1;background:var(--primary-light);color:var(--primary);border:none;border-radius:8px;padding:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">Cambiar foto</button>
             <button onclick="removePhoto()" style="flex:1;background:var(--red-light);color:var(--red);border:none;border-radius:8px;padding:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">Eliminar foto</button>
@@ -586,7 +592,7 @@ function unsubAll(){unsubListeners.forEach(u=>u&&u());unsubListeners=[];}
 
 // ── TABS ──
 window.switchTab=(tab)=>{['calendar','kids','menu','tasks','config'].forEach(tt=>{document.getElementById('panel-'+tt).classList.toggle('active',tt===tab);document.getElementById('nav-'+tt).classList.toggle('active',tt===tab);});};
-window.switchMenuTab=(tab)=>{document.getElementById('menu-weekly').style.display=tab==='weekly'?'block':'none';document.getElementById('menu-recipes').style.display=tab==='recipes'?'block':'none';document.getElementById('st-weekly').classList.toggle('active',tab==='weekly');document.getElementById('st-recipes').classList.toggle('active',tab==='recipes');};
+window.switchMenuTab=(tab)=>{document.getElementById('menu-weekly').style.display=tab==='weekly'?'block':'none';document.getElementById('menu-recipes').style.display=tab==='recipes'?'block':'none';document.getElementById('st-weekly').classList.toggle('active',tab==='weekly');document.getElementById('st-recipes').classList.toggle('active',tab==='recipes');if(tab==='recipes')renderRecipes();};
 window.switchListTab=(tab)=>{document.getElementById('list-tasks').style.display=tab==='tasks'?'block':'none';document.getElementById('list-shop').style.display=tab==='shop'?'block':'none';document.getElementById('st-tasks').classList.toggle('active',tab==='tasks');document.getElementById('st-shop').classList.toggle('active',tab==='shop');};
 
 // ── LANG ──
@@ -654,14 +660,92 @@ window.saveMenu=async(dateStr,meal,value)=>{await updateDoc(doc(db,'houses',curr
 // ── RECIPES ──
 window.renderRecipes=()=>{const search=document.getElementById('recipe-search')?.value?.toLowerCase()||'';const filtered=allRecipes.filter(r=>r.title?.toLowerCase().includes(search)).sort((a,b)=>(a.title||'').localeCompare(b.title||''));const c=document.getElementById('recipes-list');if(!filtered.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg><use href="#ico-recipe"/></svg></div><p>${t('noRecipes')}</p></div>`;return;}c.innerHTML=filtered.map(r=>`<div class="recipe-card" onclick="openRecipeModal('${r.id}')"><div class="recipe-img-wrap">${r.photo?`<img src="${r.photo}">`:`<svg><use href="#ico-recipe"/></svg>`}</div><div class="recipe-body"><h4>${r.title}</h4><div class="recipe-tags">${(r.tags||[]).map(tag=>`<span class="recipe-tag">${tag}</span>`).join('')}</div>${r.ingredients&&r.ingredients.length?`<p style="font-size:12px;color:var(--text-soft);margin-top:6px">${r.ingredients.slice(0,3).join(', ')}${r.ingredients.length>3?'...':''}</p>`:''}</div></div>`).join('');};
 
-window.openRecipeModal=(recipeId)=>{currentRecipeId=recipeId;ingrList=[];document.getElementById('recipe-modal-title').textContent=recipeId?'Ver / Editar receta':'Nueva receta';document.getElementById('recipe-delete-btn').style.display=recipeId?'block':'none';document.getElementById('photo-placeholder-wrap').style.display='block';document.getElementById('photo-preview-wrap').style.display='none';document.getElementById('rec-photo-preview').src='';document.getElementById('rec-title').value='';document.getElementById('rec-description').value='';document.querySelectorAll('#rec-tags-chips .checkbox-chip').forEach(c=>c.classList.remove('selected'));if(recipeId){const r=allRecipes.find(r=>r.id===recipeId);if(r){document.getElementById('rec-title').value=r.title||'';document.getElementById('rec-description').value=r.description||'';ingrList=r.ingredients||[];(r.tags||[]).forEach(tag=>{const chip=document.querySelector(`#rec-tags-chips [data-tag="${tag}"]`);if(chip)chip.classList.add('selected');});if(r.photo){document.getElementById('rec-photo-preview').src=r.photo;document.getElementById('photo-preview-wrap').style.display='block';document.getElementById('photo-placeholder-wrap').style.display='none';}}}renderIngrList();document.getElementById('modal-recipe').classList.add('open');};
+window.openRecipeModal=(recipeId)=>{currentRecipeId=recipeId;ingrList=[];photoDrag={active:false,startX:0,startY:0,imgX:0,imgY:0};document.getElementById('recipe-modal-title').textContent=recipeId?'Ver / Editar receta':'Nueva receta';document.getElementById('recipe-delete-btn').style.display=recipeId?'block':'none';document.getElementById('photo-placeholder-wrap').style.display='block';document.getElementById('photo-preview-wrap').style.display='none';document.getElementById('rec-photo-preview').src='';document.getElementById('photo-zoom').value=100;document.getElementById('rec-title').value='';document.getElementById('rec-description').value='';document.querySelectorAll('#rec-tags-chips .checkbox-chip').forEach(c=>c.classList.remove('selected'));if(recipeId){const r=allRecipes.find(r=>r.id===recipeId);if(r){document.getElementById('rec-title').value=r.title||'';document.getElementById('rec-description').value=r.description||'';ingrList=r.ingredients||[];(r.tags||[]).forEach(tag=>{const chip=document.querySelector(`#rec-tags-chips [data-tag="${tag}"]`);if(chip)chip.classList.add('selected');});if(r.photo){const img=document.getElementById('rec-photo-preview');img.onload=()=>{const area=document.getElementById('photo-crop-area');const aw=area.offsetWidth||300;photoDrag.imgX=0;photoDrag.imgY=0;img.style.width='100%';img.style.height='auto';updatePhotoTransform();setupPhotoDrag();};img.src=r.photo;document.getElementById('photo-preview-wrap').style.display='block';document.getElementById('photo-placeholder-wrap').style.display='none';}}}renderIngrList();document.getElementById('modal-recipe').classList.add('open');};
 
 function renderIngrList(){const c=document.getElementById('ingr-list');c.innerHTML=ingrList.map((item,i)=>`<div class="ingr-item"><span>${item}</span><button onclick="removeIngr(${i})"><svg><use href="#ico-x"/></svg></button></div>`).join('');}
 window.addIngredientToList=()=>{const input=document.getElementById('ingr-input');const val=input.value.trim();if(!val)return;ingrList.push(val);input.value='';renderIngrList();};
 window.removeIngr=(i)=>{ingrList.splice(i,1);renderIngrList();};
-window.previewPhoto=(input)=>{const file=input.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{document.getElementById('rec-photo-preview').src=e.target.result;document.getElementById('photo-placeholder-wrap').style.display='none';document.getElementById('photo-preview-wrap').style.display='block';};reader.readAsDataURL(file);};
-window.removePhoto=()=>{document.getElementById('rec-photo-preview').src='';document.getElementById('photo-preview-wrap').style.display='none';document.getElementById('photo-placeholder-wrap').style.display='block';};
-window.saveRecipe=async()=>{const title=document.getElementById('rec-title').value.trim();if(!title)return;const tags=[...document.querySelectorAll('#rec-tags-chips .checkbox-chip.selected')].map(c=>c.dataset.tag);const description=document.getElementById('rec-description').value.trim();const photoEl=document.getElementById('rec-photo-preview');const photo=document.getElementById('photo-preview-wrap').style.display!=='none'?photoEl.src:'';const data={title,tags,ingredients:ingrList,description,photo,updatedAt:serverTimestamp()};if(currentRecipeId){await updateDoc(doc(db,'houses',currentHouseId,'recipes',currentRecipeId),data);}else{data.createdAt=serverTimestamp();data.createdBy=currentUser.uid;await addDoc(collection(db,'houses',currentHouseId,'recipes'),data);}closeModal('modal-recipe');showToast(t('savedOk'));};
+// Photo editor state
+let photoDrag={active:false,startX:0,startY:0,imgX:0,imgY:0};
+
+window.previewPhoto=(input)=>{
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=document.getElementById('rec-photo-preview');
+    img.onload=()=>{
+      // Center image initially
+      const area=document.getElementById('photo-crop-area');
+      const zoom=parseInt(document.getElementById('photo-zoom').value)/100;
+      const aw=area.offsetWidth||300;
+      const ah=140;
+      const iw=img.naturalWidth*zoom;
+      const ih=img.naturalHeight*zoom;
+      photoDrag.imgX=Math.round((aw-iw)/2);
+      photoDrag.imgY=Math.round((ah-ih)/2);
+      updatePhotoTransform();
+    };
+    img.src=e.target.result;
+    document.getElementById('photo-zoom').value=100;
+    document.getElementById('photo-placeholder-wrap').style.display='none';
+    document.getElementById('photo-preview-wrap').style.display='block';
+    setupPhotoDrag();
+  };
+  reader.readAsDataURL(file);
+};
+
+function setupPhotoDrag(){
+  const area=document.getElementById('photo-crop-area');
+  const img=document.getElementById('rec-photo-preview');
+  // Touch
+  area.ontouchstart=(e)=>{const t=e.touches[0];photoDrag.active=true;photoDrag.startX=t.clientX-photoDrag.imgX;photoDrag.startY=t.clientY-photoDrag.imgY;e.preventDefault();};
+  area.ontouchmove=(e)=>{if(!photoDrag.active)return;const t=e.touches[0];photoDrag.imgX=t.clientX-photoDrag.startX;photoDrag.imgY=t.clientY-photoDrag.startY;updatePhotoTransform();e.preventDefault();};
+  area.ontouchend=()=>{photoDrag.active=false;};
+  // Mouse
+  area.onmousedown=(e)=>{photoDrag.active=true;photoDrag.startX=e.clientX-photoDrag.imgX;photoDrag.startY=e.clientY-photoDrag.imgY;};
+  area.onmousemove=(e)=>{if(!photoDrag.active)return;photoDrag.imgX=e.clientX-photoDrag.startX;photoDrag.imgY=e.clientY-photoDrag.startY;updatePhotoTransform();};
+  area.onmouseup=()=>{photoDrag.active=false;};
+  area.onmouseleave=()=>{photoDrag.active=false;};
+}
+
+window.updatePhotoTransform=()=>{
+  const img=document.getElementById('rec-photo-preview');
+  const zoom=parseInt(document.getElementById('photo-zoom').value)/100;
+  const w=img.naturalWidth*zoom;
+  const h=img.naturalHeight*zoom;
+  img.style.width=w+'px';
+  img.style.height=h+'px';
+  img.style.left=photoDrag.imgX+'px';
+  img.style.top=photoDrag.imgY+'px';
+};
+
+function capturePhotoAsDataURL(){
+  return new Promise(resolve=>{
+    const img=document.getElementById('rec-photo-preview');
+    if(!img.src||img.src===window.location.href){resolve('');return;}
+    const area=document.getElementById('photo-crop-area');
+    const aw=area.offsetWidth||300;
+    const ah=140;
+    const canvas=document.createElement('canvas');
+    canvas.width=aw*2;canvas.height=ah*2;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(2,2);
+    const zoom=parseInt(document.getElementById('photo-zoom').value)/100;
+    const w=img.naturalWidth*zoom;
+    const h=img.naturalHeight*zoom;
+    try{ctx.drawImage(img,photoDrag.imgX,photoDrag.imgY,w,h);resolve(canvas.toDataURL('image/jpeg',0.85));}
+    catch(e){resolve(img.src);}
+  });
+}
+
+window.removePhoto=()=>{
+  document.getElementById('rec-photo-preview').src='';
+  document.getElementById('photo-preview-wrap').style.display='none';
+  document.getElementById('photo-placeholder-wrap').style.display='block';
+  document.getElementById('photo-zoom').value=100;
+  photoDrag={active:false,startX:0,startY:0,imgX:0,imgY:0};
+};
+window.saveRecipe=async()=>{const title=document.getElementById('rec-title').value.trim();if(!title)return;const tags=[...document.querySelectorAll('#rec-tags-chips .checkbox-chip.selected')].map(c=>c.dataset.tag);const description=document.getElementById('rec-description').value.trim();const photo=document.getElementById('photo-preview-wrap').style.display!=='none'?await capturePhotoAsDataURL():'';const data={title,tags,ingredients:ingrList,description,photo,updatedAt:serverTimestamp()};if(currentRecipeId){await updateDoc(doc(db,'houses',currentHouseId,'recipes',currentRecipeId),data);}else{data.createdAt=serverTimestamp();data.createdBy=currentUser.uid;await addDoc(collection(db,'houses',currentHouseId,'recipes'),data);}closeModal('modal-recipe');showToast(t('savedOk'));};
 window.deleteCurrentRecipe=async()=>{if(!currentRecipeId)return;if(!confirm(t('deleteRecipe')+'?'))return;await deleteDoc(doc(db,'houses',currentHouseId,'recipes',currentRecipeId));closeModal('modal-recipe');showToast(lang==='es'?'Receta eliminada':'Recipe deleted');};
 
 // ── TRANSLATE (Claude API) ──
