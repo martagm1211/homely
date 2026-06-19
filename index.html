@@ -251,7 +251,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 
 <svg style="display:none">
 <defs>
-<symbol id="ico-house" viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></symbol>
+<symbol id="ico-house" viewBox="0 0 24 24"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12l-2 0l9 -9l9 9l-2 0"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/><path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/></symbol>
 <symbol id="ico-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
 <symbol id="ico-kids" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><circle cx="19" cy="7" r="2"/><path d="M23 21v-1a3 3 0 00-2-2.8"/></symbol>
 <symbol id="ico-menu" viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h1v11h2V11h1a2 2 0 002-2V2"/><path d="M8 2v4M6 2v4M19 2c0 4-2 7-2 9v9h2V11c0-2-2-5-2-9"/></symbol>
@@ -279,10 +279,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 <div id="auth-screen">
   <div class="auth-logo-wrap">
     <div class="auth-logo-icon">
-      <svg viewBox="0 0 40 40" width="40" height="40" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 18L20 6l15 12v16a2 2 0 01-2 2H7a2 2 0 01-2-2V18z"/>
-        <path d="M15 38V26h10v12"/>
-        <path d="M10 14V10h4v4"/>
+      <svg viewBox="0 0 24 24" width="40" height="40" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M5 12l-2 0l9 -9l9 9l-2 0"/>
+        <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7"/>
+        <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6"/>
       </svg>
     </div>
     <div class="auth-logo">Homely</div>
@@ -506,7 +507,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           </div>
           <div style="margin-top:8px">
             <div style="font-size:11px;font-weight:600;color:var(--text-soft);margin-bottom:4px">Zoom</div>
-            <input type="range" id="photo-zoom" min="100" max="300" value="100" style="width:100%;accent-color:var(--primary)" oninput="updatePhotoTransform()">
+            <input type="range" id="photo-zoom" min="0" max="200" value="0" style="width:100%;accent-color:var(--primary)" oninput="updatePhotoTransform()">
           </div>
           <div style="display:flex;gap:8px;margin-top:8px">
             <button onclick="document.getElementById('rec-photo-input').click()" style="flex:1;background:var(--primary-light);color:var(--primary);border:none;border-radius:8px;padding:8px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">Cambiar foto</button>
@@ -592,7 +593,7 @@ function unsubAll(){unsubListeners.forEach(u=>u&&u());unsubListeners=[];}
 
 // ── TABS ──
 window.switchTab=(tab)=>{['calendar','kids','menu','tasks','config'].forEach(tt=>{document.getElementById('panel-'+tt).classList.toggle('active',tt===tab);document.getElementById('nav-'+tt).classList.toggle('active',tt===tab);});};
-window.switchMenuTab=(tab)=>{document.getElementById('menu-weekly').style.display=tab==='weekly'?'block':'none';document.getElementById('menu-recipes').style.display=tab==='recipes'?'block':'none';document.getElementById('st-weekly').classList.toggle('active',tab==='weekly');document.getElementById('st-recipes').classList.toggle('active',tab==='recipes');if(tab==='recipes')renderRecipes();};
+window.switchMenuTab=(tab)=>{document.getElementById('menu-weekly').style.display=tab==='weekly'?'block':'none';document.getElementById('menu-recipes').style.display=tab==='recipes'?'block':'none';document.getElementById('st-weekly').classList.toggle('active',tab==='weekly');document.getElementById('st-recipes').classList.toggle('active',tab==='recipes');if(tab==='recipes'){const s=document.getElementById('recipe-search');if(s)s.value='';renderRecipes();}};
 window.switchListTab=(tab)=>{document.getElementById('list-tasks').style.display=tab==='tasks'?'block':'none';document.getElementById('list-shop').style.display=tab==='shop'?'block':'none';document.getElementById('st-tasks').classList.toggle('active',tab==='tasks');document.getElementById('st-shop').classList.toggle('active',tab==='shop');};
 
 // ── LANG ──
@@ -660,7 +661,7 @@ window.saveMenu=async(dateStr,meal,value)=>{await updateDoc(doc(db,'houses',curr
 // ── RECIPES ──
 window.renderRecipes=()=>{const search=(document.getElementById('recipe-search')?.value||'').toLowerCase().trim();const filtered=(search?allRecipes.filter(r=>r.title?.toLowerCase().includes(search)):allRecipes).sort((a,b)=>(a.title||'').localeCompare(b.title||''));const c=document.getElementById('recipes-list');if(!c)return;if(!allRecipes.length){c.innerHTML=`<div class="empty-state"><div class="empty-icon"><svg><use href="#ico-recipe"/></svg></div><p>${t('noRecipes')}</p></div>`;return;}if(!filtered.length){c.innerHTML=`<div class="empty-state"><p>${lang==='es'?'Sin resultados':'No results'}</p></div>`;return;}c.innerHTML=filtered.map(r=>`<div class="recipe-card" onclick="openRecipeModal('${r.id}')"><div class="recipe-img-wrap">${r.photo?`<img src="${r.photo}">`:`<svg><use href="#ico-recipe"/></svg>`}</div><div class="recipe-body"><h4>${r.title}</h4><div class="recipe-tags">${(r.tags||[]).map(tag=>`<span class="recipe-tag">${tag}</span>`).join('')}</div>${r.ingredients&&r.ingredients.length?`<p style="font-size:12px;color:var(--text-soft);margin-top:6px">${r.ingredients.slice(0,3).join(', ')}${r.ingredients.length>3?'...':''}</p>`:''}</div></div>`).join('');};
 
-window.openRecipeModal=(recipeId)=>{currentRecipeId=recipeId;ingrList=[];photoDrag={active:false,startX:0,startY:0,imgX:0,imgY:0};document.getElementById('recipe-modal-title').textContent=recipeId?'Ver / Editar receta':'Nueva receta';document.getElementById('recipe-delete-btn').style.display=recipeId?'block':'none';document.getElementById('photo-placeholder-wrap').style.display='block';document.getElementById('photo-preview-wrap').style.display='none';document.getElementById('rec-photo-preview').src='';document.getElementById('photo-zoom').value=100;document.getElementById('rec-title').value='';document.getElementById('rec-description').value='';document.querySelectorAll('#rec-tags-chips .checkbox-chip').forEach(c=>c.classList.remove('selected'));if(recipeId){const r=allRecipes.find(r=>r.id===recipeId);if(r){document.getElementById('rec-title').value=r.title||'';document.getElementById('rec-description').value=r.description||'';ingrList=r.ingredients||[];(r.tags||[]).forEach(tag=>{const chip=document.querySelector(`#rec-tags-chips [data-tag="${tag}"]`);if(chip)chip.classList.add('selected');});if(r.photo){const img=document.getElementById('rec-photo-preview');img.onload=()=>{const area=document.getElementById('photo-crop-area');const aw=area.offsetWidth||300;photoDrag.imgX=0;photoDrag.imgY=0;img.style.width='100%';img.style.height='auto';updatePhotoTransform();setupPhotoDrag();};img.src=r.photo;document.getElementById('photo-preview-wrap').style.display='block';document.getElementById('photo-placeholder-wrap').style.display='none';}}}renderIngrList();document.getElementById('modal-recipe').classList.add('open');};
+window.openRecipeModal=(recipeId)=>{currentRecipeId=recipeId;ingrList=[];photoDrag={active:false,startX:0,startY:0,imgX:0,imgY:0};baseScale=1;document.getElementById('recipe-modal-title').textContent=recipeId?'Ver / Editar receta':'Nueva receta';document.getElementById('recipe-delete-btn').style.display=recipeId?'block':'none';document.getElementById('photo-placeholder-wrap').style.display='block';document.getElementById('photo-preview-wrap').style.display='none';document.getElementById('rec-photo-preview').src='';document.getElementById('photo-zoom').value=0;document.getElementById('rec-title').value='';document.getElementById('rec-description').value='';document.querySelectorAll('#rec-tags-chips .checkbox-chip').forEach(c=>c.classList.remove('selected'));if(recipeId){const r=allRecipes.find(r=>r.id===recipeId);if(r){document.getElementById('rec-title').value=r.title||'';document.getElementById('rec-description').value=r.description||'';ingrList=r.ingredients||[];(r.tags||[]).forEach(tag=>{const chip=document.querySelector(`#rec-tags-chips [data-tag="${tag}"]`);if(chip)chip.classList.add('selected');});if(r.photo){const img=document.getElementById('rec-photo-preview');img.onload=()=>{const area=document.getElementById('photo-crop-area');const aw=area.offsetWidth||300;const ah=140;baseScale=Math.min(aw/img.naturalWidth,ah/img.naturalHeight);const w=Math.round(img.naturalWidth*baseScale);const h=Math.round(img.naturalHeight*baseScale);photoDrag.imgX=Math.round((aw-w)/2);photoDrag.imgY=Math.round((ah-h)/2);img.style.width=w+'px';img.style.height=h+'px';img.style.left=photoDrag.imgX+'px';img.style.top=photoDrag.imgY+'px';document.getElementById('photo-zoom').value=0;setupPhotoDrag();};img.src=r.photo;document.getElementById('photo-preview-wrap').style.display='block';document.getElementById('photo-placeholder-wrap').style.display='none';}}}renderIngrList();document.getElementById('modal-recipe').classList.add('open');};
 
 function renderIngrList(){const c=document.getElementById('ingr-list');c.innerHTML=ingrList.map((item,i)=>`<div class="ingr-item"><span>${item}</span><button onclick="removeIngr(${i})"><svg><use href="#ico-x"/></svg></button></div>`).join('');}
 window.addIngredientToList=()=>{const input=document.getElementById('ingr-input');const val=input.value.trim();if(!val)return;ingrList.push(val);input.value='';renderIngrList();};
@@ -668,6 +669,8 @@ window.removeIngr=(i)=>{ingrList.splice(i,1);renderIngrList();};
 // Photo editor state
 let photoDrag={active:false,startX:0,startY:0,imgX:0,imgY:0};
 
+// baseScale = escala en la que la imagen cabe completa en el recuadro (zoom=0 del slider)
+let baseScale=1;
 window.previewPhoto=(input)=>{
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
@@ -677,30 +680,22 @@ window.previewPhoto=(input)=>{
       const area=document.getElementById('photo-crop-area');
       const aw=area.offsetWidth||300;
       const ah=140;
-      const iw=img.naturalWidth;
-      const ih=img.naturalHeight;
-      // Calcular zoom para que la imagen quepa entera en el recuadro (fit)
-      const scaleW=aw/iw;
-      const scaleH=ah/ih;
-      const fitScale=Math.min(scaleW,scaleH);
-      const fitW=iw*fitScale;
-      const fitH=ih*fitScale;
-      // Centrar
-      photoDrag.imgX=Math.round((aw-fitW)/2);
-      photoDrag.imgY=Math.round((ah-fitH)/2);
-      // Reflejar zoom en el slider (0-200, base 100=tamaño natural)
-      const sliderVal=Math.round(fitScale*100);
-      document.getElementById('photo-zoom').value=Math.min(200,Math.max(10,sliderVal));
-      img.style.width=fitW+'px';
-      img.style.height=fitH+'px';
+      // Fit: la imagen cabe entera, centrada
+      baseScale=Math.min(aw/img.naturalWidth, ah/img.naturalHeight);
+      const w=Math.round(img.naturalWidth*baseScale);
+      const h=Math.round(img.naturalHeight*baseScale);
+      photoDrag.imgX=Math.round((aw-w)/2);
+      photoDrag.imgY=Math.round((ah-h)/2);
+      img.style.width=w+'px';
+      img.style.height=h+'px';
       img.style.left=photoDrag.imgX+'px';
       img.style.top=photoDrag.imgY+'px';
+      document.getElementById('photo-zoom').value=0;
+      document.getElementById('photo-placeholder-wrap').style.display='none';
+      document.getElementById('photo-preview-wrap').style.display='block';
+      setupPhotoDrag();
     };
     img.src=e.target.result;
-    document.getElementById('photo-zoom').value=100;
-    document.getElementById('photo-placeholder-wrap').style.display='none';
-    document.getElementById('photo-preview-wrap').style.display='block';
-    setupPhotoDrag();
   };
   reader.readAsDataURL(file);
 };
@@ -721,14 +716,16 @@ function setupPhotoDrag(){
 
 window.updatePhotoTransform=()=>{
   const img=document.getElementById('rec-photo-preview');
-  const zoom=parseInt(document.getElementById('photo-zoom').value)/100;
-  const w=img.naturalWidth*zoom;
-  const h=img.naturalHeight*zoom;
-  // Mantener el centro de la imagen al hacer zoom
+  const sliderVal=parseInt(document.getElementById('photo-zoom').value)||0;
+  // slider 0 = fit (baseScale), slider 200 = 3x fit
+  const scale=baseScale*(1+sliderVal/100);
+  const w=Math.round(img.naturalWidth*scale);
+  const h=Math.round(img.naturalHeight*scale);
   const prevW=parseFloat(img.style.width)||w;
   const prevH=parseFloat(img.style.height)||h;
-  photoDrag.imgX=photoDrag.imgX-(w-prevW)/2;
-  photoDrag.imgY=photoDrag.imgY-(h-prevH)/2;
+  // Zoom centrado: ajustar posición para que el centro no se mueva
+  photoDrag.imgX=Math.round(photoDrag.imgX-(w-prevW)/2);
+  photoDrag.imgY=Math.round(photoDrag.imgY-(h-prevH)/2);
   img.style.width=w+'px';
   img.style.height=h+'px';
   img.style.left=photoDrag.imgX+'px';
