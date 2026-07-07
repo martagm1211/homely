@@ -355,10 +355,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           <table class="kids-table" id="uniform-table">
             <thead><tr>
               <th id="th-uniform-name">Nombre</th>
-              <th title="Pantalón"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-pants"/></svg></th>
-              <th title="Sudadera"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-sudadera"/></svg></th>
-              <th title="Jersey"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-jersey"/></svg></th>
-              <th title="Polo"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-tshirt"/></svg></th>
+              <th>Pantalón</th>
+              <th>Polo</th>
+              <th>Jersey</th>
+              <th>Sudadera</th>
             </tr></thead>
             <tbody id="uniform-body"></tbody>
           </table>
@@ -371,9 +371,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
           <table class="kids-table" id="sizes-table">
             <thead><tr>
               <th id="th-kid-name">Nombre</th>
-              <th title="Pantalon"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-pants"/></svg></th>
-              <th title="Camiseta"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-tshirt"/></svg></th>
-              <th title="Zapatos"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-shoe"/></svg></th>
+              <th>Pantalón</th>
+              <th>Camiseta</th>
+              <th>Jersey</th>
+              <th>Zapatillas</th>
             </tr></thead>
             <tbody id="sizes-body"></tbody>
           </table>
@@ -631,11 +632,11 @@ window.deleteEvent=async(id)=>{await deleteDoc(doc(db,'houses',currentHouseId,'e
 // ── KIDS SECTION (tallas + medicacion combinados) ──
 function renderKidsSection(){renderUniformTable();renderSizesTable();renderMedsMainTable();}
 
-function renderUniformTable(){const tbody=document.getElementById('uniform-body');if(!tbody)return;if(!allKids.length){tbody.innerHTML=`<tr><td colspan="5" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.uniform||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveUniform('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.sudadera||''}" onblur="saveUniform('${kid}','sudadera',this.value)" placeholder="—"></td><td><input type="text" value="${ks.jersey||''}" onblur="saveUniform('${kid}','jersey',this.value)" placeholder="—"></td><td><input type="text" value="${ks.polo||''}" onblur="saveUniform('${kid}','polo',this.value)" placeholder="—"></td></tr>`;}).join('');}
+function renderUniformTable(){const tbody=document.getElementById('uniform-body');if(!tbody)return;if(!allKids.length){tbody.innerHTML=`<tr><td colspan="5" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.uniform||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveUniform('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.polo||''}" onblur="saveUniform('${kid}','polo',this.value)" placeholder="—"></td><td><input type="text" value="${ks.jersey||''}" onblur="saveUniform('${kid}','jersey',this.value)" placeholder="—"></td><td><input type="text" value="${ks.sudadera||''}" onblur="saveUniform('${kid}','sudadera',this.value)" placeholder="—"></td></tr>`;}).join('');}
 
 window.saveUniform=async(kid,field,value)=>{const path=`uniform.${kid}.${field}`;await updateDoc(doc(db,'houses',currentHouseId),{[path]:value});currentHouseData.uniform=currentHouseData.uniform||{};currentHouseData.uniform[kid]=currentHouseData.uniform[kid]||{};currentHouseData.uniform[kid][field]=value;};
 
-function renderSizesTable(){const tbody=document.getElementById('sizes-body');if(!allKids.length){tbody.innerHTML=`<tr><td colspan="4" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.sizes||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveSize('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.camiseta||''}" onblur="saveSize('${kid}','camiseta',this.value)" placeholder="—"></td><td><input type="text" value="${ks.zapatos||''}" onblur="saveSize('${kid}','zapatos',this.value)" placeholder="—"></td></tr>`;}).join('');}
+function renderSizesTable(){const tbody=document.getElementById('sizes-body');if(!allKids.length){tbody.innerHTML=`<tr><td colspan="5" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.sizes||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveSize('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.camiseta||''}" onblur="saveSize('${kid}','camiseta',this.value)" placeholder="—"></td><td><input type="text" value="${ks.jersey||''}" onblur="saveSize('${kid}','jersey',this.value)" placeholder="—"></td><td><input type="text" value="${ks.zapatos||''}" onblur="saveSize('${kid}','zapatos',this.value)" placeholder="—"></td></tr>`;}).join('');}
 window.saveSize=async(kid,field,value)=>{await updateDoc(doc(db,'houses',currentHouseId),{[`sizes.${kid}.${field}`]:value});};
 
 function renderMedsMainTable(){
