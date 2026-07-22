@@ -147,7 +147,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .meal-remove-btn{background:none;border:none;cursor:pointer;color:var(--text-soft);padding:4px;display:flex;align-items:center;flex-shrink:0;}
 .meal-remove-btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;}
 /* RECIPES */
-.recipe-card{background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .15s;}
+.med-card{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:box-shadow .15s;}
+.med-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);}
+background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow);overflow:hidden;cursor:pointer;transition:transform .15s;}
 .recipe-card:active{transform:scale(.98);}
 .recipe-img-wrap{width:100%;height:120px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;color:var(--primary);}
 .recipe-img-wrap svg{width:40px;height:40px;stroke:currentColor;stroke-width:1.2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
@@ -267,10 +269,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 <symbol id="ico-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></symbol>
 <symbol id="ico-pants" viewBox="0 0 24 24"><path d="M4 3h16v5l-3 13H13l-1-8-1 8H7L4 8V3z"/></symbol>
 <symbol id="ico-tshirt" viewBox="0 0 24 24"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 001 .83H6v10a1 1 0 001 1h10a1 1 0 001-1V10h2.15a1 1 0 001-.83l.57-3.57a2 2 0 00-1.34-2.14z"/></symbol>
-<!-- Sudadera: cuello caja (recto) con puños y cintura -->
-<symbol id="ico-sudadera" viewBox="0 0 24 24"><path d="M3.5 4.5L7 3h2v3h6V3h2l3.5 1.5-1.5 5H15v9H9v-9H5z"/><path d="M5 17h14" stroke-width="1.2"/></symbol>
-<!-- Jersey: cuello pico (V-neck) -->
-<symbol id="ico-jersey" viewBox="0 0 24 24"><path d="M3.5 4.5L7 3h2l3 4 3-4h2l3.5 1.5-1.5 5H15v9H9v-9H5z"/></symbol>
 <symbol id="ico-shoe" viewBox="0 0 48 32"><path d="M4 26h40a2 2 0 000-4h-4l-3-4c-2-2.5-4-4-8-4h-6l-3-3H14c-2 0-3 1-4 3l-1 2H6a2 2 0 00-2 2v3z" stroke-width="1.8"/><path d="M14 15l2-4" stroke-width="1.6"/><path d="M25 13c0 0 2 2 2 5" stroke-width="1.4"/><path d="M28 14l2 1M31 15.5l2 1" stroke-width="1.3"/><path d="M10 22c0-2 2-4 4-4" stroke-width="1.4"/><rect x="2" y="26" width="44" height="3" rx="1.5" stroke-width="1.6"/></symbol>
 <symbol id="ico-recipe" viewBox="0 0 24 24"><path d="M12 2a7 7 0 017 7c0 3-2 5-4 6v7H9v-7C7 14 5 12 5 9a7 7 0 017-7z"/><path d="M9 21h6"/></symbol>
 <symbol id="ico-x" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
@@ -348,33 +346,16 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
     <!-- NINOS -->
     <div class="tab-panel" id="panel-kids">
       <div class="section-title" id="kids-title" style="margin-bottom:16px">Ninos</div>
-      <!-- TALLAS UNIFORME -->
+      <!-- TALLAS -->
       <div class="card">
-        <div class="card-title">TALLAS - UNIFORME</div>
-        <div style="overflow-x:auto">
-          <table class="kids-table" id="uniform-table">
-            <thead><tr>
-              <th id="th-uniform-name">Nombre</th>
-              <th>Pantalón</th>
-              <th>Polo</th>
-              <th>Jersey</th>
-              <th>Sudadera</th>
-            </tr></thead>
-            <tbody id="uniform-body"></tbody>
-          </table>
-        </div>
-      </div>
-      <!-- TALLAS OTROS -->
-      <div class="card">
-        <div class="card-title" id="sizes-title">TALLAS - OTROS</div>
+        <div class="card-title" id="sizes-title">TALLAS</div>
         <div style="overflow-x:auto">
           <table class="kids-table" id="sizes-table">
             <thead><tr>
               <th id="th-kid-name">Nombre</th>
-              <th>Pantalón</th>
-              <th>Camiseta</th>
-              <th>Jersey</th>
-              <th>Zapatillas</th>
+              <th title="Pantalon"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-pants"/></svg></th>
+              <th title="Camiseta"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-tshirt"/></svg></th>
+              <th title="Zapatos"><svg width="20" height="20" style="stroke:var(--text-soft);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><use href="#ico-shoe"/></svg></th>
             </tr></thead>
             <tbody id="sizes-body"></tbody>
           </table>
@@ -438,6 +419,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
       <div class="sub-tabs">
         <div class="sub-tab active" id="st-tasks" onclick="switchListTab('tasks')">Tareas</div>
         <div class="sub-tab" id="st-shop" onclick="switchListTab('shop')">Lista de la compra</div>
+        <div class="sub-tab" id="st-meds-list" onclick="switchListTab('meds')">Medicinas</div>
       </div>
       <div id="list-tasks">
         <div style="display:flex;justify-content:flex-end;margin-bottom:12px">
@@ -457,9 +439,54 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
         <button class="clear-done-btn" onclick="clearDoneShop()">Limpiar marcados</button>
         <div id="shop-list"></div>
       </div>
+      <!-- MEDICINAS -->
+      <div id="list-meds" style="display:none">
+        <!-- Aviso agotados -->
+        <div id="meds-empty-alert" style="display:none;background:var(--red-light,#fde8e8);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--red,#c0392b)">
+          <strong>⚠️ Agotados:</strong> <span id="meds-empty-names"></span>
+        </div>
+        <!-- Controles -->
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center">
+          <input type="text" id="meds-search" placeholder="Buscar medicamento..." style="flex:1;min-width:140px" oninput="renderMedsList()">
+          <select id="meds-filter" onchange="renderMedsList()" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--surface);color:var(--text)">
+            <option value="all">Todos</option>
+            <option value="expired">Caducados</option>
+            <option value="soon">Caducan pronto</option>
+            <option value="ok">En fecha</option>
+          </select>
+          <select id="meds-sort" onchange="renderMedsList()" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--surface);color:var(--text)">
+            <option value="name">A-Z</option>
+            <option value="date">Por fecha</option>
+          </select>
+          <button class="icon-btn" onclick="openMedModal()"><svg><use href="#ico-plus"/></svg></button>
+        </div>
+        <div id="meds-list"></div>
+      </div>
     </div>
 
-    <!-- CONFIG -->
+    <!-- MODAL MEDICINA -->
+    <div class="modal-overlay" id="modal-med">
+      <div class="modal">
+        <div class="modal-header">
+          <h3 id="med-modal-title">Nueva medicina</h3>
+          <button class="modal-close" onclick="closeModal('modal-med')">✕</button>
+        </div>
+        <div class="form-group"><label>Nombre</label><input type="text" id="med-name" placeholder="Ej. Ibuprofeno"></div>
+        <div class="form-group"><label>Cantidad</label>
+          <div style="display:flex;align-items:center;gap:12px">
+            <button onclick="changeMedQty(-1)" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text)">−</button>
+            <span id="med-qty-display" style="font-size:22px;font-weight:700;min-width:32px;text-align:center">1</span>
+            <button onclick="changeMedQty(1)" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text)">+</button>
+          </div>
+        </div>
+        <div class="form-group"><label>Fecha de caducidad</label><input type="date" id="med-expiry"></div>
+        <div class="form-group"><label>Indicaciones</label><textarea id="med-notes" placeholder="Ej. Tomar con comida..." style="height:72px;resize:none"></textarea></div>
+        <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="btn btn-primary" style="flex:1" onclick="saveMed()">Guardar</button>
+          <button class="danger-btn" id="med-delete-btn" style="display:none" onclick="deleteMed()">Eliminar</button>
+        </div>
+      </div>
+    </div>
     <div class="tab-panel" id="panel-config">
       <div class="section-title" id="config-title" style="margin-bottom:16px">Configuracion</div>
       <div class="config-section">
@@ -608,13 +635,13 @@ window.createHouse=async()=>{const name=document.getElementById('new-house-name'
 window.requestJoin=async()=>{const hid=document.getElementById('join-house-id').value.trim();if(!hid)return;const snap=await getDoc(doc(db,'houses',hid));if(!snap.exists()){showToast(lang==='es'?'Casa no encontrada':'Home not found');return;}await updateDoc(doc(db,'houses',hid),{pendingIds:arrayUnion(currentUser.uid)});await setDoc(doc(db,'houses',hid,'requests',currentUser.uid),{uid:currentUser.uid,name:currentUser.displayName||currentUser.email,email:currentUser.email,requestedAt:serverTimestamp()});closeModal('modal-join-house');showToast(t('requestSent'));};
 
 // ── SUBSCRIBE ──
-function subscribeToHouse(){unsubAll();const u1=onSnapshot(collection(db,'houses',currentHouseId,'members'),snap=>{allMembers=[];snap.forEach(d=>allMembers.push(d.data()));renderMembersConfig();renderTaskAssignSelect();});const u2=onSnapshot(doc(db,'houses',currentHouseId),snap=>{currentHouseData={id:currentHouseId,...snap.data()};allKids=currentHouseData.kids||[];extraMeds=currentHouseData.extraMeds||[];document.getElementById('house-name-input').value=currentHouseData.name||'';renderKidsSection();renderKidsConfig();renderEvMembersChips();renderPendingRequests();renderExtraMedsList();});const u3=onSnapshot(query(collection(db,'houses',currentHouseId,'events'),orderBy('date')),snap=>{allEvents=[];snap.forEach(d=>allEvents.push({id:d.id,...d.data()}));renderCalendar();renderEventsForDay(selectedCalDay);});const u4=onSnapshot(collection(db,'houses',currentHouseId,'tasks'),snap=>{allTasks=[];snap.forEach(d=>allTasks.push({id:d.id,...d.data()}));renderTasks();});const u5=onSnapshot(collection(db,'houses',currentHouseId,'recipes'),snap=>{allRecipes=[];snap.forEach(d=>allRecipes.push({id:d.id,...d.data()}));renderRecipes();});const u6=onSnapshot(collection(db,'houses',currentHouseId,'shopItems'),snap=>{renderShopList(snap.docs.map(d=>({id:d.id,...d.data()})));});unsubListeners=[u1,u2,u3,u4,u5,u6];renderWeekMenu();setTimeout(async()=>{const mr=doc(db,'houses',currentHouseId,'members',currentUser.uid);const ms=await getDoc(mr);if(!ms.exists())await setDoc(mr,{uid:currentUser.uid,name:currentUser.displayName||currentUser.email,email:currentUser.email,role:currentHouseData?.adminId===currentUser.uid?'admin':'member'});},500);}
+function subscribeToHouse(){unsubAll();const u1=onSnapshot(collection(db,'houses',currentHouseId,'members'),snap=>{allMembers=[];snap.forEach(d=>allMembers.push(d.data()));renderMembersConfig();renderTaskAssignSelect();});const u2=onSnapshot(doc(db,'houses',currentHouseId),snap=>{currentHouseData={id:currentHouseId,...snap.data()};allKids=currentHouseData.kids||[];extraMeds=currentHouseData.extraMeds||[];document.getElementById('house-name-input').value=currentHouseData.name||'';renderKidsSection();renderKidsConfig();renderEvMembersChips();renderPendingRequests();renderExtraMedsList();});const u3=onSnapshot(query(collection(db,'houses',currentHouseId,'events'),orderBy('date')),snap=>{allEvents=[];snap.forEach(d=>allEvents.push({id:d.id,...d.data()}));renderCalendar();renderEventsForDay(selectedCalDay);});const u4=onSnapshot(collection(db,'houses',currentHouseId,'tasks'),snap=>{allTasks=[];snap.forEach(d=>allTasks.push({id:d.id,...d.data()}));renderTasks();});const u5=onSnapshot(collection(db,'houses',currentHouseId,'recipes'),snap=>{allRecipes=[];snap.forEach(d=>allRecipes.push({id:d.id,...d.data()}));renderRecipes();});const u6=onSnapshot(collection(db,'houses',currentHouseId,'shopItems'),snap=>{renderShopList(snap.docs.map(d=>({id:d.id,...d.data()})));});const u7=onSnapshot(collection(db,'houses',currentHouseId,'meds'),snap=>{allMeds=[];snap.forEach(d=>allMeds.push({id:d.id,...d.data()}));if(document.getElementById('list-meds')?.style.display!=='none')renderMedsList();});unsubListeners=[u1,u2,u3,u4,u5,u6,u7];renderWeekMenu();setTimeout(async()=>{const mr=doc(db,'houses',currentHouseId,'members',currentUser.uid);const ms=await getDoc(mr);if(!ms.exists())await setDoc(mr,{uid:currentUser.uid,name:currentUser.displayName||currentUser.email,email:currentUser.email,role:currentHouseData?.adminId===currentUser.uid?'admin':'member'});},500);}
 function unsubAll(){unsubListeners.forEach(u=>u&&u());unsubListeners=[];}
 
 // ── TABS ──
 window.switchTab=(tab)=>{['calendar','kids','menu','tasks','config'].forEach(tt=>{document.getElementById('panel-'+tt).classList.toggle('active',tt===tab);document.getElementById('nav-'+tt).classList.toggle('active',tt===tab);});};
 window.switchMenuTab=(tab)=>{document.getElementById('menu-weekly').style.display=tab==='weekly'?'block':'none';document.getElementById('menu-recipes').style.display=tab==='recipes'?'block':'none';document.getElementById('st-weekly').classList.toggle('active',tab==='weekly');document.getElementById('st-recipes').classList.toggle('active',tab==='recipes');if(tab==='recipes')renderRecipes();};
-window.switchListTab=(tab)=>{document.getElementById('list-tasks').style.display=tab==='tasks'?'block':'none';document.getElementById('list-shop').style.display=tab==='shop'?'block':'none';document.getElementById('st-tasks').classList.toggle('active',tab==='tasks');document.getElementById('st-shop').classList.toggle('active',tab==='shop');};
+window.switchListTab=(tab)=>{document.getElementById('list-tasks').style.display=tab==='tasks'?'block':'none';document.getElementById('list-shop').style.display=tab==='shop'?'block':'none';document.getElementById('list-meds').style.display=tab==='meds'?'block':'none';document.getElementById('st-tasks').classList.toggle('active',tab==='tasks');document.getElementById('st-shop').classList.toggle('active',tab==='shop');document.getElementById('st-meds-list').classList.toggle('active',tab==='meds');if(tab==='meds')renderMedsList();};
 
 // ── LANG ──
 window.setLang=(l)=>{lang=l;localStorage.setItem('homely-lang',l);applyLang();renderCalendar();renderEventsForDay(selectedCalDay);renderTasks();renderKidsSection();renderKidsConfig();renderMembersConfig();renderWeekMenu();renderRecipes();renderExtraMedsList();};
@@ -630,13 +657,9 @@ window.saveEvent=async()=>{const title=document.getElementById('ev-title').value
 window.deleteEvent=async(id)=>{await deleteDoc(doc(db,'houses',currentHouseId,'events',id));};
 
 // ── KIDS SECTION (tallas + medicacion combinados) ──
-function renderKidsSection(){renderUniformTable();renderSizesTable();renderMedsMainTable();}
+function renderKidsSection(){renderSizesTable();renderMedsMainTable();}
 
-function renderUniformTable(){const tbody=document.getElementById('uniform-body');if(!tbody)return;if(!allKids.length){tbody.innerHTML=`<tr><td colspan="5" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.uniform||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveUniform('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.polo||''}" onblur="saveUniform('${kid}','polo',this.value)" placeholder="—"></td><td><input type="text" value="${ks.jersey||''}" onblur="saveUniform('${kid}','jersey',this.value)" placeholder="—"></td><td><input type="text" value="${ks.sudadera||''}" onblur="saveUniform('${kid}','sudadera',this.value)" placeholder="—"></td></tr>`;}).join('');}
-
-window.saveUniform=async(kid,field,value)=>{const path=`uniform.${kid}.${field}`;await updateDoc(doc(db,'houses',currentHouseId),{[path]:value});currentHouseData.uniform=currentHouseData.uniform||{};currentHouseData.uniform[kid]=currentHouseData.uniform[kid]||{};currentHouseData.uniform[kid][field]=value;};
-
-function renderSizesTable(){const tbody=document.getElementById('sizes-body');if(!allKids.length){tbody.innerHTML=`<tr><td colspan="5" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.sizes||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveSize('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.camiseta||''}" onblur="saveSize('${kid}','camiseta',this.value)" placeholder="—"></td><td><input type="text" value="${ks.jersey||''}" onblur="saveSize('${kid}','jersey',this.value)" placeholder="—"></td><td><input type="text" value="${ks.zapatos||''}" onblur="saveSize('${kid}','zapatos',this.value)" placeholder="—"></td></tr>`;}).join('');}
+function renderSizesTable(){const tbody=document.getElementById('sizes-body');if(!allKids.length){tbody.innerHTML=`<tr><td colspan="4" style="color:var(--text-soft);font-size:13px;padding:12px 0">${t('noKids')}</td></tr>`;return;}const sizes=currentHouseData.sizes||{};tbody.innerHTML=allKids.map(kid=>{const ks=sizes[kid]||{};return`<tr><td>${kid}</td><td><input type="text" value="${ks.pantalon||''}" onblur="saveSize('${kid}','pantalon',this.value)" placeholder="—"></td><td><input type="text" value="${ks.camiseta||''}" onblur="saveSize('${kid}','camiseta',this.value)" placeholder="—"></td><td><input type="text" value="${ks.zapatos||''}" onblur="saveSize('${kid}','zapatos',this.value)" placeholder="—"></td></tr>`;}).join('');}
 window.saveSize=async(kid,field,value)=>{await updateDoc(doc(db,'houses',currentHouseId),{[`sizes.${kid}.${field}`]:value});};
 
 function renderMedsMainTable(){
@@ -811,6 +834,137 @@ window.toggleChip=(el)=>{el.classList.toggle('selected');};
 // ── TOAST ──
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2500);}
 window.showToast=showToast;
+
+// ── MEDICINAS ──
+let allMeds=[];
+let currentMedId=null;
+let currentMedQty=1;
+
+// Suscripción en tiempo real
+function initMedsListener(){
+  if(!currentHouseId)return;
+  onSnapshot(collection(db,'houses',currentHouseId,'meds'),snap=>{
+    allMeds=[];
+    snap.forEach(d=>allMeds.push({id:d.id,...d.data()}));
+    if(document.getElementById('list-meds').style.display!=='none')renderMedsList();
+  });
+}
+
+function getMedStatus(expiry){
+  if(!expiry)return'ok';
+  const today=new Date();today.setHours(0,0,0,0);
+  const exp=new Date(expiry);exp.setHours(0,0,0,0);
+  const diff=Math.floor((exp-today)/(1000*60*60*24));
+  if(diff<0)return'expired';
+  if(diff<=31)return'soon';
+  return'ok';
+}
+
+window.renderMedsList=()=>{
+  const search=(document.getElementById('meds-search')?.value||'').toLowerCase().trim();
+  const filter=document.getElementById('meds-filter')?.value||'all';
+  const sort=document.getElementById('meds-sort')?.value||'name';
+
+  let list=[...allMeds];
+
+  // Búsqueda
+  if(search)list=list.filter(m=>(m.name||'').toLowerCase().includes(search));
+
+  // Filtro caducidad
+  if(filter!=='all')list=list.filter(m=>getMedStatus(m.expiry)===filter);
+
+  // Orden
+  if(sort==='name')list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  else list.sort((a,b)=>{if(!a.expiry)return 1;if(!b.expiry)return -1;return a.expiry.localeCompare(b.expiry);});
+
+  // Aviso agotados (sobre lista completa, no filtrada)
+  const empty=allMeds.filter(m=>(m.qty||0)===0);
+  const alert=document.getElementById('meds-empty-alert');
+  if(empty.length){
+    alert.style.display='block';
+    document.getElementById('meds-empty-names').textContent=empty.map(m=>m.name).join(', ');
+  }else{
+    alert.style.display='none';
+  }
+
+  const c=document.getElementById('meds-list');
+  if(!list.length){
+    c.innerHTML=`<div class="empty-state"><p>Sin medicamentos</p></div>`;
+    return;
+  }
+
+  c.innerHTML=list.map(m=>{
+    const qty=m.qty||0;
+    const status=getMedStatus(m.expiry);
+    const expiryColor=status==='expired'?'var(--red,#c0392b)':status==='soon'?'var(--orange,#e67e22)':'var(--text-soft)';
+    const expiryLabel=m.expiry?formatMedDate(m.expiry):'—';
+    const nameColor=qty===0?'var(--text-soft)':'var(--text)';
+    return`<div class="med-card" onclick="openMedModal('${m.id}')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:15px;color:${nameColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name||'Sin nombre'}</div>
+          ${m.notes?`<div style="font-size:12px;color:var(--text-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.notes}</div>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div style="text-align:right">
+            <div style="font-size:12px;color:var(--text-soft)">Caduca</div>
+            <div style="font-size:13px;font-weight:600;color:${expiryColor}">${expiryLabel}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+            <div style="font-size:11px;color:var(--text-soft)">Cant.</div>
+            <div style="font-size:18px;font-weight:700;color:${nameColor}">${qty}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+function formatMedDate(str){
+  if(!str)return'—';
+  const[y,m,d]=str.split('-');
+  return`${d}/${m}/${y}`;
+}
+
+window.openMedModal=(id)=>{
+  currentMedId=id||null;
+  const med=id?allMeds.find(m=>m.id===id):null;
+  document.getElementById('med-modal-title').textContent=id?'Editar medicina':'Nueva medicina';
+  document.getElementById('med-delete-btn').style.display=id?'inline-block':'none';
+  document.getElementById('med-name').value=med?.name||'';
+  document.getElementById('med-expiry').value=med?.expiry||'';
+  document.getElementById('med-notes').value=med?.notes||'';
+  currentMedQty=med?.qty??1;
+  document.getElementById('med-qty-display').textContent=currentMedQty;
+  document.getElementById('modal-med').classList.add('open');
+};
+
+window.changeMedQty=(delta)=>{
+  currentMedQty=Math.max(0,currentMedQty+delta);
+  document.getElementById('med-qty-display').textContent=currentMedQty;
+};
+
+window.saveMed=async()=>{
+  const name=document.getElementById('med-name').value.trim();
+  if(!name)return;
+  const data={name,qty:currentMedQty,expiry:document.getElementById('med-expiry').value||'',notes:document.getElementById('med-notes').value.trim(),updatedAt:serverTimestamp()};
+  if(currentMedId){
+    await updateDoc(doc(db,'houses',currentHouseId,'meds',currentMedId),data);
+  }else{
+    data.createdAt=serverTimestamp();
+    await addDoc(collection(db,'houses',currentHouseId,'meds'),data);
+  }
+  closeModal('modal-med');
+  showToast(t('savedOk'));
+};
+
+window.deleteMed=async()=>{
+  if(!currentMedId)return;
+  await deleteDoc(doc(db,'houses',currentHouseId,'meds',currentMedId));
+  closeModal('modal-med');
+  showToast('Eliminado');
+};
+
 applyLang();
 </script>
 </body>
