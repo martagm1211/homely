@@ -442,7 +442,7 @@ background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--
       <!-- MEDICINAS -->
       <div id="list-meds" style="display:none">
         <!-- Aviso agotados -->
-        <div id="meds-empty-alert" style="display:none;background:var(--red-light,#fde8e8);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--red,#c0392b)">
+        <div id="meds-empty-alert" style="display:none;background:var(--red-light,#fde8e8);border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:13px;color:#C62828">
           <strong>⚠️ Agotados:</strong> <span id="meds-empty-names"></span>
         </div>
         <!-- Controles -->
@@ -482,6 +482,12 @@ background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--
           </div>
         </div>
         <div class="form-group" id="med-expiry-group"><label>Fecha de caducidad</label><input type="date" id="med-expiry"></div>
+        <div class="form-group"><label>Ubicación</label>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button id="med-loc-kids" onclick="setMedLocation('kids')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)">🧒 Botiquín niños</button>
+            <button id="med-loc-adults" onclick="setMedLocation('adults')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)">🧑 Botiquín adultos</button>
+          </div>
+        </div>
         <div class="form-group"><label>Indicaciones</label><textarea id="med-notes" placeholder="Ej. Tomar con comida..." style="height:72px;resize:none"></textarea></div>
         <div style="display:flex;gap:10px;margin-top:4px">
           <button class="btn btn-primary" style="flex:1" onclick="saveMed()">Guardar</button>
@@ -881,7 +887,7 @@ window.renderMedsList=()=>{
   c.innerHTML=list.map(m=>{
     const qty=m.qty||0;
     const status=getMedStatus(m.expiry);
-    const expiryColor=status==='expired'?'var(--red,#c0392b)':status==='soon'?'#e67e22':'var(--text-soft)';
+    const expiryColor=status==='expired'?'#C62828':status==='soon'?'#FF8F00':'var(--text-soft)';
     const nameColor=qty===0?'var(--text-soft)':'var(--text)';
     const expiryLabel=m.expiry?formatMedDate(m.expiry):'—';
     return `<div class="med-card" onclick="openMedModal('${m.id}')"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-weight:600;font-size:15px;color:${nameColor}">${m.name||'Sin nombre'}</span><span style="font-size:13px;font-weight:600;color:${expiryColor}">${expiryLabel}</span></div></div>`;
@@ -903,6 +909,16 @@ window.changeMedQty=(delta)=>{
   }
 };
 
+let currentMedLocation='';
+window.setMedLocation=(loc)=>{
+  currentMedLocation=currentMedLocation===loc?'':loc;
+  const primary=getComputedStyle(document.documentElement).getPropertyValue('--primary')||'#E8956D';
+  document.getElementById('med-loc-kids').style.background=currentMedLocation==='kids'?'var(--primary-light,#fde8d8)':'var(--surface)';
+  document.getElementById('med-loc-kids').style.borderColor=currentMedLocation==='kids'?'var(--primary,#E8956D)':'var(--border)';
+  document.getElementById('med-loc-adults').style.background=currentMedLocation==='adults'?'var(--primary-light,#fde8d8)':'var(--surface)';
+  document.getElementById('med-loc-adults').style.borderColor=currentMedLocation==='adults'?'var(--primary,#E8956D)':'var(--border)';
+};
+
 window.openMedModal=(id)=>{
   currentMedId=id||null;
   const med=id?allMeds.find(m=>m.id===id):null;
@@ -915,6 +931,12 @@ window.openMedModal=(id)=>{
   document.getElementById('med-qty-display').textContent=currentMedQty;
   const expiryGroup=document.getElementById('med-expiry-group');
   if(expiryGroup)expiryGroup.style.display=currentMedQty===0?'none':'block';
+  currentMedLocation='';
+  document.getElementById('med-loc-kids').style.background='var(--surface)';
+  document.getElementById('med-loc-kids').style.borderColor='var(--border)';
+  document.getElementById('med-loc-adults').style.background='var(--surface)';
+  document.getElementById('med-loc-adults').style.borderColor='var(--border)';
+  if(med?.location){currentMedLocation=med.location;setMedLocation(med.location);}
   document.getElementById('modal-med').classList.add('open');
 };
 
@@ -922,7 +944,7 @@ window.openMedModal=(id)=>{
   const name=document.getElementById('med-name').value.trim();
   if(!name){alert('Escribe el nombre');return;}
   try{
-    const data={name,qty:currentMedQty,expiry:document.getElementById('med-expiry').value||'',notes:document.getElementById('med-notes').value.trim(),updatedAt:serverTimestamp()};
+    const data={name,qty:currentMedQty,expiry:document.getElementById('med-expiry').value||'',notes:document.getElementById('med-notes').value.trim(),location:currentMedLocation,updatedAt:serverTimestamp()};
     if(currentMedId){
       await updateDoc(doc(db,'houses',currentHouseId,'meds',currentMedId),data);
     }else{
