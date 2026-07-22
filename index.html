@@ -901,8 +901,22 @@ window.changeMedQty=(delta)=>{
   }
 };
 
+window.openMedModal=(id)=>{
+  currentMedId=id||null;
+  const med=id?allMeds.find(m=>m.id===id):null;
+  document.getElementById('med-modal-title').textContent=id?'Editar medicina':'Nueva medicina';
+  document.getElementById('med-delete-btn').style.display=id?'inline-block':'none';
+  document.getElementById('med-name').value=med?.name||'';
+  document.getElementById('med-expiry').value=med?.expiry||'';
+  document.getElementById('med-notes').value=med?.notes||'';
+  currentMedQty=med?.qty??1;
+  document.getElementById('med-qty-display').textContent=currentMedQty;
+  const expiryGroup=document.getElementById('med-expiry-group');
+  if(expiryGroup)expiryGroup.style.display=currentMedQty===0?'none':'block';
+  document.getElementById('modal-med').classList.add('open');
+};
+
 window.saveMed=async()=>{
-  const name=document.getElementById('med-name').value.trim();
   if(!name)return;
   const data={name,qty:currentMedQty,expiry:document.getElementById('med-expiry').value||'',notes:document.getElementById('med-notes').value.trim(),updatedAt:serverTimestamp()};
   if(currentMedId){
