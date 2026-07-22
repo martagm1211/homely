@@ -910,13 +910,23 @@ window.changeMedQty=(delta)=>{
 };
 
 let currentMedLocation='';
+function applyMedLocationUI(){
+  const ON_BG='#fcd5b0';
+  const ON_BORDER='#C2600A';
+  const ON_COLOR='#7A3800';
+  const kids=document.getElementById('med-loc-kids');
+  const adults=document.getElementById('med-loc-adults');
+  if(!kids||!adults)return;
+  kids.style.background=currentMedLocation==='kids'?ON_BG:'var(--surface)';
+  kids.style.borderColor=currentMedLocation==='kids'?ON_BORDER:'var(--border)';
+  kids.style.color=currentMedLocation==='kids'?ON_COLOR:'var(--text)';
+  adults.style.background=currentMedLocation==='adults'?ON_BG:'var(--surface)';
+  adults.style.borderColor=currentMedLocation==='adults'?ON_BORDER:'var(--border)';
+  adults.style.color=currentMedLocation==='adults'?ON_COLOR:'var(--text)';
+}
 window.setMedLocation=(loc)=>{
   currentMedLocation=currentMedLocation===loc?'':loc;
-  const primary=getComputedStyle(document.documentElement).getPropertyValue('--primary')||'#E8956D';
-  document.getElementById('med-loc-kids').style.background=currentMedLocation==='kids'?'var(--primary-light,#fde8d8)':'var(--surface)';
-  document.getElementById('med-loc-kids').style.borderColor=currentMedLocation==='kids'?'var(--primary,#E8956D)':'var(--border)';
-  document.getElementById('med-loc-adults').style.background=currentMedLocation==='adults'?'var(--primary-light,#fde8d8)':'var(--surface)';
-  document.getElementById('med-loc-adults').style.borderColor=currentMedLocation==='adults'?'var(--primary,#E8956D)':'var(--border)';
+  applyMedLocationUI();
 };
 
 window.openMedModal=(id)=>{
@@ -931,13 +941,9 @@ window.openMedModal=(id)=>{
   document.getElementById('med-qty-display').textContent=currentMedQty;
   const expiryGroup=document.getElementById('med-expiry-group');
   if(expiryGroup)expiryGroup.style.display=currentMedQty===0?'none':'block';
-  currentMedLocation='';
-  document.getElementById('med-loc-kids').style.background='var(--surface)';
-  document.getElementById('med-loc-kids').style.borderColor='var(--border)';
-  document.getElementById('med-loc-adults').style.background='var(--surface)';
-  document.getElementById('med-loc-adults').style.borderColor='var(--border)';
-  if(med?.location){currentMedLocation=med.location;setMedLocation(med.location);}
+  currentMedLocation=med?.location||'';
   document.getElementById('modal-med').classList.add('open');
+  setTimeout(()=>applyMedLocationUI(),0);
 };
 
  window.saveMed=async()=>{
