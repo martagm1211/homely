@@ -888,6 +888,8 @@ window.renderMedsList=()=>{
   }).join('');
 };
 
+function formatMedDate(str){if(!str)return'—';const[y,m,d]=str.split('-');return d+'/'+m+'/'+y;}
+
 window.changeMedQty=(delta)=>{
   currentMedQty=Math.max(0,currentMedQty+delta);
   document.getElementById('med-qty-display').textContent=currentMedQty;
