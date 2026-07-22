@@ -484,14 +484,14 @@ background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--
         <div class="form-group" id="med-expiry-group"><label>Fecha de caducidad</label><input type="date" id="med-expiry"></div>
         <div class="form-group"><label>Ubicación</label>
           <div style="display:flex;gap:8px;margin-top:4px">
-            <button id="med-loc-kids" onclick="setMedLocation('kids')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)">🧒 Botiquín niños</button>
-            <button id="med-loc-adults" onclick="setMedLocation('adults')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)">🧑 Botiquín adultos</button>
+            <button id="med-loc-kids" onclick="setMedLocation('kids')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)">Botiquín niños</button>
+            <button id="med-loc-adults" onclick="setMedLocation('adults')" style="flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--text)">Botiquín adultos</button>
           </div>
         </div>
         <div class="form-group"><label>Indicaciones</label><textarea id="med-notes" placeholder="Ej. Tomar con comida..." style="height:72px;resize:none"></textarea></div>
         <div style="display:flex;gap:10px;margin-top:4px">
+          <button class="danger-btn" id="med-delete-btn" style="display:none;flex:0 0 auto;padding:0 18px" onclick="deleteMed()">Eliminar</button>
           <button class="btn btn-primary" style="flex:1" onclick="saveMed()">Guardar</button>
-          <button class="danger-btn" id="med-delete-btn" style="display:none" onclick="deleteMed()">Eliminar</button>
         </div>
       </div>
     </div>
