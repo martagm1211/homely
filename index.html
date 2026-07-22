@@ -57,7 +57,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
 .app-header-title h2{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);}
 .app-header-title p{font-size:12px;color:var(--text-soft);}
 .app-content{flex:1;overflow-y:auto;padding-bottom:80px;}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.05);}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:none;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -4px 20px rgba(0,0,0,.05);}
 .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;color:var(--text-soft);border:none;background:none;font-family:inherit;}
 .nav-item.active{color:var(--primary);}
 .nav-item svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;margin-bottom:3px;}
@@ -627,7 +627,7 @@ window.doRegister=async()=>{const n=document.getElementById('reg-name').value.tr
 window.doLogout=async()=>{unsubAll();currentHouseId=null;currentHouseData=null;await signOut(auth);};
 onAuthStateChanged(auth,async(user)=>{if(user){currentUser=user;applyLang();showScreen('house');loadHouses();}else{currentUser=null;applyLang();showScreen('auth');}});
 
-function showScreen(n){document.getElementById('auth-screen').style.display=n==='auth'?'flex':'none';document.getElementById('house-screen').style.display=n==='house'?'flex':'none';document.getElementById('app').style.display=n==='app'?'flex':'none';}
+function showScreen(n){document.getElementById('auth-screen').style.display=n==='auth'?'flex':'none';document.getElementById('house-screen').style.display=n==='house'?'flex':'none';document.getElementById('app').style.display=n==='app'?'flex':'none';document.querySelector('.bottom-nav').style.display=n==='app'?'flex':'none';}
 
 // ── HOUSES ──
 async function loadHouses(){document.getElementById('house-list').innerHTML='<div class="loading"><div class="loading-spinner"></div></div>';const q=query(collection(db,'houses'),where('memberIds','array-contains',currentUser.uid));onSnapshot(q,snap=>{const houses=[];snap.forEach(d=>houses.push({id:d.id,...d.data()}));const q2=query(collection(db,'houses'),where('pendingIds','array-contains',currentUser.uid));onSnapshot(q2,snap2=>{const pending=[];snap2.forEach(d=>pending.push({id:d.id,...d.data()}));renderHouseList(houses,pending);});});}
@@ -884,11 +884,7 @@ window.renderMedsList=()=>{
     const expiryColor=status==='expired'?'var(--red,#c0392b)':status==='soon'?'#e67e22':'var(--text-soft)';
     const nameColor=qty===0?'var(--text-soft)':'var(--text)';
     const expiryLabel=m.expiry?formatMedDate(m.expiry):'—';
-    return '<div class="med-card" onclick="openMedModal(''+m.id+'')">'
-      +'<div style="display:flex;align-items:center;justify-content:space-between">'
-      +'<span style="font-weight:600;font-size:15px;color:'+nameColor+'">'+( m.name||'Sin nombre')+'</span>'
-      +'<span style="font-size:13px;font-weight:600;color:'+expiryColor+'">'+expiryLabel+'</span>'
-      +'</div></div>';
+    return `<div class="med-card" onclick="openMedModal('${m.id}')"><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-weight:600;font-size:15px;color:${nameColor}">${m.name||'Sin nombre'}</span><span style="font-size:13px;font-weight:600;color:${expiryColor}">${expiryLabel}</span></div></div>`;
   }).join('');
 };
 
