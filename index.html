@@ -916,19 +916,24 @@ window.openMedModal=(id)=>{
   document.getElementById('modal-med').classList.add('open');
 };
 
-window.saveMed=async()=>{
-  if(!name)return;
-  const data={name,qty:currentMedQty,expiry:document.getElementById('med-expiry').value||'',notes:document.getElementById('med-notes').value.trim(),updatedAt:serverTimestamp()};
-  if(currentMedId){
-    await updateDoc(doc(db,'houses',currentHouseId,'meds',currentMedId),data);
-  }else{
-    data.createdAt=serverTimestamp();
-    await addDoc(collection(db,'houses',currentHouseId,'meds'),data);
+ window.saveMed=async()=>{
+  const name=document.getElementById('med-name').value.trim();
+  if(!name){alert('Escribe el nombre');return;}
+  try{
+    const data={name,qty:currentMedQty,expiry:document.getElementById('med-expiry').value||'',notes:document.getElementById('med-notes').value.trim(),updatedAt:serverTimestamp()};
+    if(currentMedId){
+      await updateDoc(doc(db,'houses',currentHouseId,'meds',currentMedId),data);
+    }else{
+      data.createdAt=serverTimestamp();
+      await addDoc(collection(db,'houses',currentHouseId,'meds'),data);
+    }
+    closeModal('modal-med');
+    showToast('Guardado!');
+  }catch(e){
+    console.error('saveMed error:',e);
+    alert('Error: '+e.message);
   }
-  closeModal('modal-med');
-  showToast(t('savedOk'));
 };
-
 window.deleteMed=async()=>{
   if(!currentMedId)return;
   await deleteDoc(doc(db,'houses',currentHouseId,'meds',currentMedId));
