@@ -464,6 +464,8 @@ background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--
       </div>
     </div>
 
+    </div>
+
     <!-- MODAL MEDICINA -->
     <div class="modal-overlay" id="modal-med">
       <div class="modal">
@@ -479,7 +481,7 @@ background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--
             <button onclick="changeMedQty(1)" style="width:36px;height:36px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text)">+</button>
           </div>
         </div>
-        <div class="form-group"><label>Fecha de caducidad</label><input type="date" id="med-expiry"></div>
+        <div class="form-group" id="med-expiry-group"><label>Fecha de caducidad</label><input type="date" id="med-expiry"></div>
         <div class="form-group"><label>Indicaciones</label><textarea id="med-notes" placeholder="Ej. Tomar con comida..." style="height:72px;resize:none"></textarea></div>
         <div style="display:flex;gap:10px;margin-top:4px">
           <button class="btn btn-primary" style="flex:1" onclick="saveMed()">Guardar</button>
@@ -487,6 +489,7 @@ background:#fff;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--
         </div>
       </div>
     </div>
+
     <div class="tab-panel" id="panel-config">
       <div class="section-title" id="config-title" style="margin-bottom:16px">Configuracion</div>
       <div class="config-section">
@@ -864,84 +867,42 @@ window.renderMedsList=()=>{
   const search=(document.getElementById('meds-search')?.value||'').toLowerCase().trim();
   const filter=document.getElementById('meds-filter')?.value||'all';
   const sort=document.getElementById('meds-sort')?.value||'name';
-
   let list=[...allMeds];
-
-  // Búsqueda
   if(search)list=list.filter(m=>(m.name||'').toLowerCase().includes(search));
-
-  // Filtro caducidad
   if(filter!=='all')list=list.filter(m=>getMedStatus(m.expiry)===filter);
-
-  // Orden
   if(sort==='name')list.sort((a,b)=>(a.name||'').localeCompare(b.name||''));
   else list.sort((a,b)=>{if(!a.expiry)return 1;if(!b.expiry)return -1;return a.expiry.localeCompare(b.expiry);});
-
-  // Aviso agotados (sobre lista completa, no filtrada)
   const empty=allMeds.filter(m=>(m.qty||0)===0);
-  const alert=document.getElementById('meds-empty-alert');
-  if(empty.length){
-    alert.style.display='block';
-    document.getElementById('meds-empty-names').textContent=empty.map(m=>m.name).join(', ');
-  }else{
-    alert.style.display='none';
-  }
-
+  const alertEl=document.getElementById('meds-empty-alert');
+  if(empty.length){alertEl.style.display='block';document.getElementById('meds-empty-names').textContent=empty.map(m=>m.name).join(', ');}
+  else{alertEl.style.display='none';}
   const c=document.getElementById('meds-list');
-  if(!list.length){
-    c.innerHTML=`<div class="empty-state"><p>Sin medicamentos</p></div>`;
-    return;
-  }
-
+  if(!list.length){c.innerHTML='<div class="empty-state"><p>Sin medicamentos</p></div>';return;}
   c.innerHTML=list.map(m=>{
     const qty=m.qty||0;
     const status=getMedStatus(m.expiry);
-    const expiryColor=status==='expired'?'var(--red,#c0392b)':status==='soon'?'var(--orange,#e67e22)':'var(--text-soft)';
-    const expiryLabel=m.expiry?formatMedDate(m.expiry):'—';
+    const expiryColor=status==='expired'?'var(--red,#c0392b)':status==='soon'?'#e67e22':'var(--text-soft)';
     const nameColor=qty===0?'var(--text-soft)':'var(--text)';
-    return`<div class="med-card" onclick="openMedModal('${m.id}')">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;font-size:15px;color:${nameColor};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.name||'Sin nombre'}</div>
-          ${m.notes?`<div style="font-size:12px;color:var(--text-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.notes}</div>`:''}
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <div style="text-align:right">
-            <div style="font-size:12px;color:var(--text-soft)">Caduca</div>
-            <div style="font-size:13px;font-weight:600;color:${expiryColor}">${expiryLabel}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
-            <div style="font-size:11px;color:var(--text-soft)">Cant.</div>
-            <div style="font-size:18px;font-weight:700;color:${nameColor}">${qty}</div>
-          </div>
-        </div>
-      </div>
-    </div>`;
+    const expiryLabel=m.expiry?formatMedDate(m.expiry):'—';
+    return '<div class="med-card" onclick="openMedModal(''+m.id+'')">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between">'
+      +'<span style="font-weight:600;font-size:15px;color:'+nameColor+'">'+( m.name||'Sin nombre')+'</span>'
+      +'<span style="font-size:13px;font-weight:600;color:'+expiryColor+'">'+expiryLabel+'</span>'
+      +'</div></div>';
   }).join('');
-};
-
-function formatMedDate(str){
-  if(!str)return'—';
-  const[y,m,d]=str.split('-');
-  return`${d}/${m}/${y}`;
-}
-
-window.openMedModal=(id)=>{
-  currentMedId=id||null;
-  const med=id?allMeds.find(m=>m.id===id):null;
-  document.getElementById('med-modal-title').textContent=id?'Editar medicina':'Nueva medicina';
-  document.getElementById('med-delete-btn').style.display=id?'inline-block':'none';
-  document.getElementById('med-name').value=med?.name||'';
-  document.getElementById('med-expiry').value=med?.expiry||'';
-  document.getElementById('med-notes').value=med?.notes||'';
-  currentMedQty=med?.qty??1;
-  document.getElementById('med-qty-display').textContent=currentMedQty;
-  document.getElementById('modal-med').classList.add('open');
 };
 
 window.changeMedQty=(delta)=>{
   currentMedQty=Math.max(0,currentMedQty+delta);
   document.getElementById('med-qty-display').textContent=currentMedQty;
+  const expiryGroup=document.getElementById('med-expiry-group');
+  if(currentMedQty===0){
+    if(expiryGroup)expiryGroup.style.display='none';
+    const ei=document.getElementById('med-expiry');
+    if(ei)ei.value='';
+  }else{
+    if(expiryGroup)expiryGroup.style.display='block';
+  }
 };
 
 window.saveMed=async()=>{
